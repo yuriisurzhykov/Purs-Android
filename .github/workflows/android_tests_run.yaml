@@ -1,0 +1,41 @@
+name: Tests check
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 19
+        uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'corretto'
+          cache: gradle
+
+      - name: Configure Keystore
+        run: |
+          echo "$ANDROID_KEYSTORE_FILE" > app/keystore.jks.b64
+          base64 -d -i app/keystore.jks.b64 > app/keystore.jks
+          echo "keystoreFile=app/keystore.jks" >> signing.properties
+          echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> signing.properties
+          echo "keystorePassword=$KEYSTORE_STORE_PASSWORD" >> signing.properties
+          echo "::debug::storePassword=$KEYSTORE_STORE_PASSWORD"
+          echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> signing.properties
+        env:
+          ANDROID_KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+          KEYSTORE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew test
