@@ -35,7 +35,8 @@ The cached structure should be similar to the cloud. There should be 2 entities:
 
 `Working hours`
 - Work day name – _String_
-- Working hours – _String_ (all working hours can be persisted in single sting separated with comma)
+- Start time – _String_
+- End time – _String_
 - LocationId – _Int_ (a foreign key pointing  a location associated with it)
 
 # UI Design
