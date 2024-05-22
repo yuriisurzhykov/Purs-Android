@@ -175,7 +175,7 @@ Upon selection, the app navigates to the detailed working hours screen for the c
 On this screen, the user sees the location name and its working hours.
 The user can navigate back to the location selection screen to choose another location.
 ### Visualization of User Flow
-<img src="https://github.com/yuriisurzhykov/Purs-Android/assets/44873047/0359dacb-0c88-4239-b2d3-f2b75f3355ed" alt="drawing" width="250"/>
+<img src="https://github.com/yuriisurzhykov/Purs-Android/assets/44873047/0359dacb-0c88-4239-b2d3-f2b75f3355ed" alt="drawing" width="350"/>
 
 ### Location selection screen
 #### UI Elements
