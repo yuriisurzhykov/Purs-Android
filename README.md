@@ -136,6 +136,55 @@ The location may be opened 24 hours for the day if `start_local_date` is 00:00 a
 ```
 
 # UI Design
+The primary source of design requirements is the [Figma document](https://www.figma.com/file/5BXJxCRmeOCeWyW9D0ivc7/Mobile-Take-home?type=design&node-id=0%3A1&mode=design&t=esTJOvM76vo0a121-1)
+### Background
+The background of application screen is the [image](https://lh3.googleusercontent.com/p/AF1QipNvaaR6eoBC7I48N_-ROU30qsi_h2Sf5eQRxWtr=s1360-w1360-h1020). There is no specific requirements, so it can either be used as asset or may be downloaded for user.
+#### Decision:
+In order to reduce the load on the network and avoid unnecessary calls to the network, it would be better to use an image as an asset croped for different screen sizes.
+
+### Location selection
+In the example JSON structure the only one location is available, but to make things more flexible and scalable it would be better if we would open selection screen in case of multiple location available. So the logic should be the following:
+- If there is only one location in the structure, then a screen with details by working hours immediately opens.
+- If there is multiple locations the selection screen should be displayed.
+- If no location received the dialog should appear to notify user about the failure
+
+### Location screen
+Components:
+- Title: The title is the location name. Should have the `Title 1` style. Aligned to the top of parent and stretched to the width of screen.
+- Working hours dropdown menu.
+    - Aligned to the bottom of Title.
+    - Displayes "Open ..." label based on the [requirements](https://github.com/yuriisurzhykov/Purs-Android/tree/003-create-a-detailed-description-for-ui-layer?tab=readme-ov-file#general-statements)
+    - Color bullet indicator to visualise the current status of location
+    - "See more hours" label to hint the user that more hours available to see
+
+### Working hours selection
+- When user clicks the dropdown menu the previous content should remain unchanged but menu must drops down.
+- Working days should be aligned the following way:
+    - Name of the day aligned to the right
+    - Hours aligned to the left. If more than one time slot available for the day, it should appear right under the first time occurence.
+- It's better to animate dropdown effect to make the UI smooth
+## User flow
+1. App Launch:
+The app starts, and the user sees a loading screen or the main screen.
+2. Location Selection Screen:
+After loading, the user is presented with a screen to select a location from a list of available locations.
+3. Location Selection:
+The user selects a location from the list.
+Upon selection, the app navigates to the detailed working hours screen for the chosen location.
+4. Working Hours Screen:
+On this screen, the user sees the location name and its working hours.
+The user can navigate back to the location selection screen to choose another location.
+### Visualization of User Flow
+<img src="https://github.com/yuriisurzhykov/Purs-Android/assets/44873047/0359dacb-0c88-4239-b2d3-f2b75f3355ed" alt="drawing" width="350"/>
+
+### Location selection screen
+#### UI Elements
+- Navigation Bar/App Bar with the title "Select Location".
+- List of locations (List in SwiftUI, LazyColumn in Jetpack Compose).
+- Loading indicator (ProgressView in SwiftUI, CircularProgressIndicator in Jetpack Compose) while data is being loaded.
+- Each list item should be styled as a card (CardView) with the location name and an arrow indicating navigation to the detail screen.
+#### Actions
+When a list item is tapped, the app navigates to the detailed working hours screen for the selected location.
 
 # Test cases
 
