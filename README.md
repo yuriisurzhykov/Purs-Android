@@ -136,6 +136,22 @@ The location may be opened 24 hours for the day if `start_local_date` is 00:00 a
 ```
 
 # UI Design
+The primary source of design requirements is the [Figma document](https://www.figma.com/file/5BXJxCRmeOCeWyW9D0ivc7/Mobile-Take-home?type=design&node-id=0%3A1&mode=design&t=esTJOvM76vo0a121-1)
+### Background
+The background of application screen is the [image](https://lh3.googleusercontent.com/p/AF1QipNvaaR6eoBC7I48N_-ROU30qsi_h2Sf5eQRxWtr=s1360-w1360-h1020). There is no specific requirements, so it can either be used as asset or may be downloaded for user.
+#### Decision:
+In order to reduce the load on the network and avoid unnecessary calls to the network, it would be better to use an image as an asset croped for different screen sizes.
+
+### Location selection
+In the example JSON structure the only one location is available, but to make things more flexible and scalable it would be better if we would open selection screen in case of multiple location available. So the logic should be the following:
+- If there is only one location in the structure, then a screen with details by working hours immediately opens.
+- If there is multiple locations the selection screen should be displayed.
+- If no location received the dialog should appear to notify user about the failure
+
+### Location screen
+
+
+### Working hours selection
 
 # Test cases
 
