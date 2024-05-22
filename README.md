@@ -197,6 +197,30 @@ When a list item is tapped, the app navigates to the detailed working hours scre
   <summary>Architecture design</summary>
   
   # Architecture design
+## Multimodule Structure
+A multimodule architecture allows splitting the project into independent modules, improving maintainability, testability, and build speed. The proposed structure:
+- app: The main application module that ties together all other modules.
+- data: The module for managing data (cloud and cache).
+- domain: The module for business logic and use cases.
+- presentation: The module for UI and ViewModel.
+## Module Structure
+### app Module
+The main entry point of the application.
+Dependencies on other modules (data, domain, presentation).
+Dagger Hilt configurations for dependency injection.
+### data Module
+Submodules:
+- cloud: Handling network requests (Ktor or Retrofit).
+- cache: Handling database operations (Room).
+- Repository: Combining data from cloud and cache.
+
+### domain Module
+- Use cases: Business logic and data formatting.
+- Entities: Business data models.
+
+### presentation Module
+- ViewModel: Managing UI state.
+- UI: User interface components (SwiftUI for iOS and Jetpack Compose for Android).
 </details>
 
 # Test cases
