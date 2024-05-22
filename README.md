@@ -149,9 +149,22 @@ In the example JSON structure the only one location is available, but to make th
 - If no location received the dialog should appear to notify user about the failure
 
 ### Location screen
-
+Components:
+- Title: The title is the location name. Should have the `Title 1` style. Aligned to the top of parent and stretched to the width of screen.
+- Working hours dropdown menu.
+    - Aligned to the bottom of Title.
+    - Displayes "Open ..." label based on the [requirements](https://github.com/yuriisurzhykov/Purs-Android/tree/003-create-a-detailed-description-for-ui-layer?tab=readme-ov-file#general-statements)
+    - Color bullet indicator to visualise the current status of location
+    - "See more hours" label to hint the user that more hours available to see
 
 ### Working hours selection
+- When user clicks the dropdown menu the previous content should remain unchanged but menu must drops down.
+- Working days should be aligned the following way:
+    - Name of the day aligned to the right
+    - Hours aligned to the left. If more than one time slot available for the day, it should appear right under the first time occurence.
+- It's better to animate dropdown effect to make the UI smooth
+### Location selection screen
+
 
 # Test cases
 
