@@ -1,6 +1,8 @@
 # About
 
 Purs-Android is an android version of the test application which is concidered as a "Take Home Assignment"
+<details>
+  <summary>Requirements</summary>
 
 # Requirements
 ## Data Layer
@@ -134,6 +136,10 @@ The location may be opened 24 hours for the day if `start_local_date` is 00:00 a
   "end_local_time": "00:00:00"
 }
 ```
+</details>
+
+<details>
+  <summary> UI Design </summary>
 
 # UI Design
 The primary source of design requirements is the [Figma document](https://www.figma.com/file/5BXJxCRmeOCeWyW9D0ivc7/Mobile-Take-home?type=design&node-id=0%3A1&mode=design&t=esTJOvM76vo0a121-1)
@@ -185,6 +191,13 @@ The user can navigate back to the location selection screen to choose another lo
 - Each list item should be styled as a card (CardView) with the location name and an arrow indicating navigation to the detail screen.
 #### Actions
 When a list item is tapped, the app navigates to the detailed working hours screen for the selected location.
+</details>
+
+<details>
+  <summary>Architecture design</summary>
+  
+  # Architecture design
+</details>
 
 # Test cases
 
