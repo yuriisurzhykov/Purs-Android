@@ -53,7 +53,7 @@ Working hours
   - If the location is opened             – 🟢
   - If the location closes within an hour – 🟡
   - If the location is closed             – 🔴
-- The time format should be the local either 24h or 12h
+- The time format should be the local either **24h** or **12h**
 
 ### Data format
 - All operation hours should be grouped in one day. This means that if JSON file contains same day name but different hours of work they have to be displayed in one row.\
