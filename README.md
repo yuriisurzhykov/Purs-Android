@@ -29,15 +29,15 @@ The **working day** structure should contain the following fields:
 #### Cache
 The cached structure should be similar to the cloud. There should be 2 entities: **location** and **working hours**. The location structure should contain location id which can be an integer, and the location name which is the String.
 
-`Location`
-- LocationId – _Int_
-- LocationName – _String_
+Location
+- `LocationId` – _Int_
+- `LocationName` – _String_
 
-`Working hours`
-- Work day name – _String_
-- Start time – _String_
-- End time – _String_
-- LocationId – _Int_ (a foreign key pointing  a location associated with it)
+Working hours
+- `WorkDayName` – _String_
+- `StartTime` – _String_
+- `EndTime` – _String_
+- `LocationId` – _Int_ (a foreign key pointing  a location associated with it)
 
 # UI Design
 
