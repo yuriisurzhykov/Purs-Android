@@ -39,3 +39,4 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew test
+        continue-on-error: false
