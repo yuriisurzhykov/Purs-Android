@@ -163,8 +163,28 @@ Components:
     - Name of the day aligned to the right
     - Hours aligned to the left. If more than one time slot available for the day, it should appear right under the first time occurence.
 - It's better to animate dropdown effect to make the UI smooth
-### Location selection screen
+## User flow
+1. App Launch:
+The app starts, and the user sees a loading screen or the main screen.
+2. Location Selection Screen:
+After loading, the user is presented with a screen to select a location from a list of available locations.
+3. Location Selection:
+The user selects a location from the list.
+Upon selection, the app navigates to the detailed working hours screen for the chosen location.
+4. Working Hours Screen:
+On this screen, the user sees the location name and its working hours.
+The user can navigate back to the location selection screen to choose another location.
+### Visualization of User Flow
+<img src="https://github.com/yuriisurzhykov/Purs-Android/assets/44873047/0359dacb-0c88-4239-b2d3-f2b75f3355ed" alt="drawing" width="250"/>
 
+### Location selection screen
+#### UI Elements
+- Navigation Bar/App Bar with the title "Select Location".
+- List of locations (List in SwiftUI, LazyColumn in Jetpack Compose).
+- Loading indicator (ProgressView in SwiftUI, CircularProgressIndicator in Jetpack Compose) while data is being loaded.
+- Each list item should be styled as a card (CardView) with the location name and an arrow indicating navigation to the detail screen.
+#### Actions
+When a list item is tapped, the app navigates to the detailed working hours screen for the selected location.
 
 # Test cases
 
