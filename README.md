@@ -117,6 +117,8 @@ Open until early morning means that the location opens one day and continues to 
   "end_local_time": "02:00:00"
 }
 ```
+> [!NOTE]  
+> This case only works if the work time is continuous, that is, there is no break between the end of one day's work and the start of another day. In this case 2am time belongs to Monday and it counts that Tuesday is not working day and should be displayed as closed the whole day unless no other working hours for this particular day.
  
 #### Open 24 hours
 The location may be opened 24 hours for the day if `start_local_date` is 00:00 and the `end_local_date` is 24:00. The "Open 24 hours" has to be displayed.
