@@ -242,7 +242,31 @@ Business layour have to contain 3 structures:
 
 </details>
 
-# Test cases
+<details>
+  <summary> Technology stack </summary>
+  
+# Technology stack
+## Fetching data from cloud
+The application must talk to the server to receive location details. The most advanced libraries for working with the network are:
+- [Ktor](https://ktor.io/docs/client-create-multiplatform-application.html)
+- [Retrofit](https://square.github.io/retrofit/)
+
+When choosing between these two libraries, preference is given to `Retrofit` due to its simplicity and ease of configuration in a native android project.
+
+## Data persistence
+For data persistence there are a bunch of libraries either SQL or NoSQL. The most popular libaries for data persistence for native android application are the following:
+- [Room](https://developer.android.com/training/data-storage/room) – Library built on top of SQLite 
+- [Realm](https://www.mongodb.com/docs/atlas/device-sdks/sdk/kotlin/install/#std-label-kotlin-install-android) – NoSQL database
+- [SqlDelight](https://github.com/cashapp/sqldelight)
+
+Choosing between these libraries the easiest and the fast-to-implement solution would be Android Room so the **decision** is to take `Android Room` to cache the cloud data
+
+## Concurrency
+Taking into account that the Application is an Android app which will be written fully in Kotlin, [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) will be used for the concurrency.
+
+## UI Framework
+The requirements for the application is to write UI using [Jetpack Compose](https://developer.android.com/develop/ui/compose/documentation) so the `Compose` will be used for the UI part of application.
+</details>
 
 # Contacts
 Email: yuriisurzhykov@gmail.com
