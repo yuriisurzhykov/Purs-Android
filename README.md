@@ -117,6 +117,8 @@ Open until early morning means that the location opens one day and continues to 
   "end_local_time": "02:00:00"
 }
 ```
+> [!NOTE]  
+> This case only works if the work time is continuous, that is, there is no break between the end of one day's work and the start of another day. In this case 2am time belongs to Monday and it counts that Tuesday is not working day and should be displayed as closed the whole day unless no other working hours for this particular day.
  
 #### Open 24 hours
 The location may be opened 24 hours for the day if `start_local_date` is 00:00 and the `end_local_date` is 24:00. The "Open 24 hours" has to be displayed.
@@ -196,10 +198,75 @@ When a list item is tapped, the app navigates to the detailed working hours scre
 <details>
   <summary>Architecture design</summary>
   
-  # Architecture design
+# Architecture design
+## Multimodule Structure
+A multimodule architecture allows splitting the project into independent modules, improving maintainability, testability, and build speed. The proposed structure:
+- **core:** This module contains abstract components such as dispatchers, mapper interfaces and everything that can be shared between different modules.
+- **app:** The main application module that ties together all other modules.
+- **data:** The module for managing data (cloud and cache).
+- **domain:** The module for business logic and use cases.
+- **presentation:** The module for UI and ViewModel.
+## Module Structure
+### app Module
+The main entry point of the application.
+Dependencies on other modules (data, domain, presentation).
+Dagger Hilt configurations for dependency injection.
+### data Module
+Submodules:
+- **cloud:** Handling network requests (Ktor or Retrofit).
+- **cache:** Handling database operations (Room).
+- **Repository:** Combining data from cloud and cache.
+
+### domain Module
+#### Use cases 
+Business logic and data formatting
+- Use case to build proper workdays list
+- Use case to format date and time
+- Use case to build current working day details (have to be triggered every minute to keep the current information up to date for the user)
+
+#### Entities 
+Business data models.
+
+Business layour have to contain 3 structures:
+- `Location`
+    - _Location name_
+    - _List of workdays_ (always 7 items length)
+- `WorkDay`
+    - _WorkingHour_ (might be a list of strings or Empty if no working hours fetched from cloud for the day)
+- `CurrentWorkDay`
+    - _Open status_: { OpenUntil(time), ClosesWithinHour(next open time), ClosedOpensNextDay(open time), Closed(next open day, next open hours) }
+
+### presentation Module
+- ViewModel: Managing UI state.
+- UI: User interface components (SwiftUI for iOS and Jetpack Compose for Android).
+
 </details>
 
-# Test cases
+<details>
+  <summary> Technology stack </summary>
+  
+# Technology stack
+## Fetching data from cloud
+The application must talk to the server to receive location details. The most advanced libraries for working with the network are:
+- [Ktor](https://ktor.io/docs/client-create-multiplatform-application.html)
+- [Retrofit](https://square.github.io/retrofit/)
+
+When choosing between these two libraries, preference is given to `Retrofit` due to its simplicity and ease of configuration in a native android project.
+
+## Data persistence
+For data persistence there are a bunch of libraries either SQL or NoSQL. The most popular libaries for data persistence for native android application are the following:
+- [Room](https://developer.android.com/training/data-storage/room) – Library built on top of SQLite 
+- [Realm](https://www.mongodb.com/docs/atlas/device-sdks/sdk/kotlin/install/#std-label-kotlin-install-android) – NoSQL database
+- [SqlDelight](https://github.com/cashapp/sqldelight)
+
+Choosing between these libraries the easiest and the fast-to-implement solution would be Android Room so the **decision** is to take `Android Room` to cache the cloud data
+
+## Concurrency
+Taking into account that the Application is an Android app which will be written fully in Kotlin, [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) will be used for the concurrency.
+
+## UI Framework
+The requirements for the application is to write UI using [Jetpack Compose](https://developer.android.com/develop/ui/compose/documentation) so the `Compose` will be used for the UI part of application.
+</details>
 
 # Contacts
 Email: yuriisurzhykov@gmail.com
