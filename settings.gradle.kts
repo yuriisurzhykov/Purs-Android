@@ -23,3 +23,10 @@ dependencyResolutionManagement {
 
 rootProject.name = "Purs-Android"
 include(":app")
+include(":core")
+include(":data:cloud")
+include(":data:cache")
+include(":data:repository")
+include(":domain")
+include(":features:location-details")
+include(":features:location-selection")

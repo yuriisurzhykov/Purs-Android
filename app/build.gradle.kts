@@ -8,12 +8,12 @@ plugins {
 
 android {
     namespace = "com.github.yuriisurzhykov.purs"
-    compileSdk = 34
+    compileSdk = ProjectProperties.compileSdkVersion
 
     defaultConfig {
         applicationId = "com.github.yuriisurzhykov.purs"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = ProjectProperties.minSdkVersion
+        targetSdk = ProjectProperties.targetSdkVersion
         versionCode = 1
         versionName = "1.0"
 
@@ -48,17 +48,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_19
-        targetCompatibility = JavaVersion.VERSION_19
+        sourceCompatibility = ProjectProperties.javaSourceCompatibility
+        targetCompatibility = ProjectProperties.javaTargetCompatibility
     }
     kotlinOptions {
-        jvmTarget = "19"
+        jvmTarget = ProjectProperties.kotlinJvmTarget
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
+        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.kotlin.compiler.ext.get()
     }
     packaging {
         resources {
