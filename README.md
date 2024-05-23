@@ -198,13 +198,14 @@ When a list item is tapped, the app navigates to the detailed working hours scre
 <details>
   <summary>Architecture design</summary>
   
-  # Architecture design
+# Architecture design
 ## Multimodule Structure
 A multimodule architecture allows splitting the project into independent modules, improving maintainability, testability, and build speed. The proposed structure:
-- app: The main application module that ties together all other modules.
-- data: The module for managing data (cloud and cache).
-- domain: The module for business logic and use cases.
-- presentation: The module for UI and ViewModel.
+- **core:** This module contains abstract components such as dispatchers, mapper interfaces and everything that can be shared between different modules.
+- **app:** The main application module that ties together all other modules.
+- **data:** The module for managing data (cloud and cache).
+- **domain:** The module for business logic and use cases.
+- **presentation:** The module for UI and ViewModel.
 ## Module Structure
 ### app Module
 The main entry point of the application.
@@ -212,17 +213,33 @@ Dependencies on other modules (data, domain, presentation).
 Dagger Hilt configurations for dependency injection.
 ### data Module
 Submodules:
-- cloud: Handling network requests (Ktor or Retrofit).
-- cache: Handling database operations (Room).
-- Repository: Combining data from cloud and cache.
+- **cloud:** Handling network requests (Ktor or Retrofit).
+- **cache:** Handling database operations (Room).
+- **Repository:** Combining data from cloud and cache.
 
 ### domain Module
-- Use cases: Business logic and data formatting.
-- Entities: Business data models.
+#### Use cases 
+Business logic and data formatting
+- Use case to build proper workdays list
+- Use case to format date and time
+- Use case to build current working day details (have to be triggered every minute to keep the current information up to date for the user)
+
+#### Entities 
+Business data models.
+
+Business layour have to contain 3 structures:
+- `Location`
+    - _Location name_
+    - _List of workdays_ (always 7 items length)
+- `WorkDay`
+    - _WorkingHour_ (might be a list of strings or Empty if no working hours fetched from cloud for the day)
+- `CurrentWorkDay`
+    - _Open status_: { OpenUntil(time), ClosesWithinHour(next open time), ClosedOpensNextDay(open time), Closed(next open day, next open hours) }
 
 ### presentation Module
 - ViewModel: Managing UI state.
 - UI: User interface components (SwiftUI for iOS and Jetpack Compose for Android).
+
 </details>
 
 # Test cases
