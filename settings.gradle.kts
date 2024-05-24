@@ -24,6 +24,7 @@ dependencyResolutionManagement {
 rootProject.name = "Purs-Android"
 include(":app")
 include(":core")
+include(":core:android")
 include(":data:cloud")
 include(":data:cache")
 include(":data:repository")
