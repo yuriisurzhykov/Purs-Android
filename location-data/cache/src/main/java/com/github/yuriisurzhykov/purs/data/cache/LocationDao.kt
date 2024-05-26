@@ -1,18 +1,19 @@
 package com.github.yuriisurzhykov.purs.data.cache
 
+import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
 import com.github.yuriisurzhykov.purs.data.cache.model.LocationCache
 import com.github.yuriisurzhykov.purs.data.cache.model.LocationWithWorkingHours
 import com.github.yuriisurzhykov.purs.data.cache.model.WorkingHourCache
-import kotlinx.coroutines.flow.Flow
 
+@Dao
 abstract class LocationDao {
 
     @Transaction
     @Query("SELECT * FROM locations WHERE locationId=:id")
-    abstract fun getLocation(id: Long): Flow<LocationWithWorkingHours>
+    abstract suspend fun getLocation(id: Long): LocationWithWorkingHours?
 
     @Upsert
     abstract suspend fun insert(location: LocationCache): Long

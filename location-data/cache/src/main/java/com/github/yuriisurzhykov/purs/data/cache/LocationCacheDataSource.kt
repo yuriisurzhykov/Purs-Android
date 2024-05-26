@@ -1,20 +1,40 @@
 package com.github.yuriisurzhykov.purs.data.cache
 
+import com.github.yuriisurzhykov.purs.core.RequestResult
 import com.github.yuriisurzhykov.purs.data.cache.model.LocationWithWorkingHours
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 interface LocationCacheDataSource {
 
-    suspend fun fetchLocation(): Flow<LocationWithWorkingHours>
+    suspend fun fetchLocation(): Flow<RequestResult<LocationWithWorkingHours>>
 
     suspend fun persistLocation(location: LocationWithWorkingHours)
 
-    class Base(
+    class Base @Inject constructor(
         private val locationDao: LocationDao,
         private val getLocationId: GetLocationId
     ) : LocationCacheDataSource {
-        override suspend fun fetchLocation(): Flow<LocationWithWorkingHours> {
-            return locationDao.getLocation(getLocationId.locationId())
+
+        override suspend fun fetchLocation(): Flow<RequestResult<LocationWithWorkingHours>> {
+            val requestLocationId = getLocationId.locationId()
+            return flow { emit(locationDao.getLocation(requestLocationId)) }
+                .map { location ->
+                    if (location != null) {
+                        RequestResult.Success(location)
+                    } else {
+                        RequestResult.Error(
+                            null,
+                            NoValueFoundException("Location with ID $requestLocationId not found")
+                        )
+                    }
+                }.catch {
+                    emit(RequestResult.Error(null, it))
+                }
+
         }
 
         override suspend fun persistLocation(location: LocationWithWorkingHours) {

@@ -1,12 +1,14 @@
 package com.github.yuriisurzhykov.purs.data.cache
 
+import javax.inject.Inject
+
 interface GetLocationId {
 
     fun locationId(): Long
 
-    class Const(
+    class Const @Inject constructor(
         private val constLocationId: Long
-    ): GetLocationId {
+    ) : GetLocationId {
         override fun locationId(): Long = constLocationId
     }
 }

@@ -17,6 +17,7 @@ import androidx.room.PrimaryKey
 data class WorkingHourCache(
     @PrimaryKey(autoGenerate = true)
     val workingHourId: Long,
-    val workingHour: String,
+    val workingHourStart: String,
+    val workingHourEnd: String,
     val locationId: Long
 )
