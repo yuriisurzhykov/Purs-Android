@@ -18,6 +18,7 @@ class LocationDaoTest {
             1,
             "12:00:00",
             "15:00:00",
+            "Mon",
             1
         )
         val fakeLocationEmbedded = LocationWithWorkingHours(fakeLocation, listOf(fakeWorkingHour))
