@@ -38,7 +38,8 @@ interface LocationCacheDataSource {
         }
 
         override suspend fun persistLocation(location: LocationWithWorkingHours) {
-            locationDao.insert(location)
+            val newLocation = location.location.copy(locationId = getLocationId.locationId())
+            locationDao.insert(location.copy(location = newLocation))
         }
     }
 }

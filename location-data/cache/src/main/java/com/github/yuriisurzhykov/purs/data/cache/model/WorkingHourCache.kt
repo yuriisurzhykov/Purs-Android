@@ -19,5 +19,6 @@ data class WorkingHourCache(
     val workingHourId: Long,
     val workingHourStart: String,
     val workingHourEnd: String,
+    val workingDayName: String,
     val locationId: Long
 )

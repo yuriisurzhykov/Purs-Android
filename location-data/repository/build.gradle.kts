@@ -36,10 +36,13 @@ dependencies {
 
     api(projects.locationData.cloud)
     api(projects.locationData.cache)
+    api(projects.core)
+    api(projects.core.data)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.javax.inject)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
