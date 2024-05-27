@@ -25,6 +25,7 @@ class LocationCacheDataSourceTest {
                     1,
                     "12:00:00",
                     "15:00:00",
+                    "Mon",
                     1
                 )
             )
@@ -91,6 +92,7 @@ class LocationCacheDataSourceTest {
                     1,
                     "12:00:00",
                     "15:00:00",
+                    "Mon",
                     1
                 )
             )
