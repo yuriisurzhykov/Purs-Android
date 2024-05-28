@@ -386,6 +386,24 @@ using [Jetpack Compose](https://developer.android.com/develop/ui/compose/documen
 the `Compose` will be used for the UI part of application.
 </details>
 
+<details>
+  <summary>Build application locally</summary>
+
+### Create a keystore file
+(if you want to make a debug build, you may skip this section)
+
+First of all you need to generate a keystore file with .jks extension
+### Create signing.properties file in project
+After you created a keystore file you have to create a `signing.properties` file in root folder of the project. The content of the file should be the following:
+```
+keystoreFile=purs_android_key.jks
+keystorePassword=Purs2024
+keyAlias=purs
+keyPassword=Purs2024
+```
+**NOTE:** You can leave all variables empty if you just want to make a debug build
+</details>
+
 # Contacts
 
 Email: yuriisurzhykov@gmail.com
