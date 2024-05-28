@@ -1,10 +1,11 @@
-package com.github.yuriisurzhykov.purs
+package com.github.yuriisurzhykov.purs.di
 
 import android.content.Context
 import androidx.room.Room
 import com.github.yuriisurzhykov.purs.core.MergeStrategy
 import com.github.yuriisurzhykov.purs.core.RequestResponseMergeStrategy
 import com.github.yuriisurzhykov.purs.core.RequestResult
+import com.github.yuriisurzhykov.purs.data.PursDatabase
 import com.github.yuriisurzhykov.purs.data.cache.GetLocationId
 import com.github.yuriisurzhykov.purs.data.cache.LocationCacheDataSource
 import com.github.yuriisurzhykov.purs.data.cache.LocationDao
@@ -18,7 +19,7 @@ import com.github.yuriisurzhykov.purs.data.repository.LocationWorkingHoursCloudM
 import com.github.yuriisurzhykov.purs.domain.chain.AddMissingDaysUseCase
 import com.github.yuriisurzhykov.purs.domain.chain.MergeCrossDayTimeSlotsUseCase
 import com.github.yuriisurzhykov.purs.domain.chain.MergeTimeSlotsUseCase
-import com.github.yuriisurzhykov.purs.domain.chain.SortMissingDaysUseCase
+import com.github.yuriisurzhykov.purs.domain.chain.SortWorkingDaysUseCase
 import com.github.yuriisurzhykov.purs.domain.chain.WorkingHourChainProcessor
 import com.github.yuriisurzhykov.purs.domain.mapper.LocationCacheToDomainMapper
 import com.github.yuriisurzhykov.purs.domain.mapper.StringToDayOfWeekMapper
@@ -98,11 +99,11 @@ object PursAppModule {
     fun provideWorkingHourChainProcessor(
         mergeCrossDayTimeSlots: MergeCrossDayTimeSlotsUseCase,
         addMissingDaysUseCase: AddMissingDaysUseCase,
-        sortMissingDaysUseCase: SortMissingDaysUseCase
+        sortWorkingDaysUseCase: SortWorkingDaysUseCase
     ): WorkingHourChainProcessor = WorkingHourChainProcessor.Base(
         mergeCrossDayTimeSlots,
         addMissingDaysUseCase,
-        sortMissingDaysUseCase
+        sortWorkingDaysUseCase
     )
 
     @Provides
@@ -115,12 +116,12 @@ object PursAppModule {
 
     @Provides
     @Singleton
-    fun provideMergeCrossDayTimeSlotsUseCase(sortMissingDaysUseCase: SortMissingDaysUseCase): MergeCrossDayTimeSlotsUseCase =
-        MergeCrossDayTimeSlotsUseCase.Base(sortMissingDaysUseCase)
+    fun provideMergeCrossDayTimeSlotsUseCase(sortWorkingDaysUseCase: SortWorkingDaysUseCase): MergeCrossDayTimeSlotsUseCase =
+        MergeCrossDayTimeSlotsUseCase.Base(sortWorkingDaysUseCase)
 
     @Provides
     @Singleton
-    fun provideSortMissingDaysUseCase(): SortMissingDaysUseCase = SortMissingDaysUseCase.Base()
+    fun provideSortMissingDaysUseCase(): SortWorkingDaysUseCase = SortWorkingDaysUseCase.Base()
 
     @Provides
     @Singleton

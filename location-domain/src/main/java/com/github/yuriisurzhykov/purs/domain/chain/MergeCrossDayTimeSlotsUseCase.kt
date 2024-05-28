@@ -4,17 +4,25 @@ import com.github.yuriisurzhykov.purs.domain.model.WorkingDay
 import java.time.LocalTime
 import javax.inject.Inject
 
-interface MergeCrossDayTimeSlotsUseCase : ProcessWorkingHoursCollection{
+/**
+ * The chain processor for merging cross-day time slots. This class is responsible for merging
+ * working days that contain time slots that cross days. For example, if the starting time of
+ * the first time slot is 20:00 and the ending time is 24:00 but the starting time of next day
+ * is 00:00 and the ending time is 04:00, then the first time slot will be merged with the
+ * next day's time slot. So the merged time slots will be: 20:00-04:00. And will be removed from
+ * the next schedule day.
+ * */
+interface MergeCrossDayTimeSlotsUseCase : ProcessWorkingHoursCollection {
 
     class Base @Inject constructor(
-        private val sortMissingDaysUseCase: SortMissingDaysUseCase
+        private val sortWorkingDaysUseCase: SortWorkingDaysUseCase
     ) : MergeCrossDayTimeSlotsUseCase {
 
         override fun process(collection: Collection<WorkingDay>): Collection<WorkingDay> {
             if (collection.isEmpty() || collection.size == 1) return collection
 
             val mergedTimeSlots = mutableSetOf<WorkingDay>()
-            val sortedTimeSlots = sortMissingDaysUseCase.process(collection).iterator()
+            val sortedTimeSlots = sortWorkingDaysUseCase.process(collection).iterator()
 
             // Get the first time slot
             var currentSlot = sortedTimeSlots.next()

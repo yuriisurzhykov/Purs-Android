@@ -1,4 +1,4 @@
-package com.github.yuriisurzhykov.purs
+package com.github.yuriisurzhykov.purs.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

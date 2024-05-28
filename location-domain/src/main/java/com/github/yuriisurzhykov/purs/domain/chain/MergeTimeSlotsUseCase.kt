@@ -4,6 +4,11 @@ import com.github.yuriisurzhykov.purs.domain.model.TimeSlot
 import com.github.yuriisurzhykov.purs.domain.model.WorkingDay
 import javax.inject.Inject
 
+/**
+ * This interface defines a use case for merging time slots in a collection of working days that
+ * overlap each other. For example, time slots: 8:00-15:00 and 10:00-11:00 are considered overlapping
+ * time slots. To this interface merges all such time slots into one time slot: 8:00-15:00.
+ * */
 interface MergeTimeSlotsUseCase {
 
     fun mergeTimeSlots(workDay: WorkingDay): WorkingDay

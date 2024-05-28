@@ -4,6 +4,10 @@ import com.github.yuriisurzhykov.purs.domain.model.WorkingDay
 import java.time.DayOfWeek
 import javax.inject.Inject
 
+/**
+ * In the result list of working days, some days may be missing. So this interface
+ * appends all missing days to the collection and returns the result.
+ * */
 interface AddMissingDaysUseCase : ProcessWorkingHoursCollection {
 
     class Base @Inject constructor() : AddMissingDaysUseCase {

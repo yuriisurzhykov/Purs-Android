@@ -16,9 +16,13 @@ interface LocationCloudDataSource {
     ) : LocationCloudDataSource {
         override suspend fun fetchLocation(): Flow<RequestResult<LocationCloud>> {
             return flow {
+                // Start progress
+                emit(RequestResult.InProgress())
                 try {
+                    // Fetch location details from the cloud
                     val locationResponse = locationService.fetchLocation()
                     if (locationResponse.isSuccessful) {
+                        // Map body to whether success response or error if body is empty or null
                         val responseBody = locationResponse.body()
                         if (responseBody != null) {
                             emit(RequestResult.Success(responseBody))
@@ -26,6 +30,7 @@ interface LocationCloudDataSource {
                             emit(RequestResult.Error(data = null, error = null))
                         }
                     } else {
+                        // if response is not successful then map error to error response
                         val error = ServerError(
                             locationResponse.code(),
                             locationResponse.errorBody()?.string().orEmpty()

@@ -12,6 +12,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+/**
+ * The use case to build a list of working hours for a location. Operates using flow
+ * to emit [RequestResult].
+ * */
 interface BuildWorkingHoursListUseCase {
 
     fun workingHours(): Flow<RequestResult<Location>>
@@ -28,10 +32,14 @@ interface BuildWorkingHoursListUseCase {
                 val repositoryResult = repository.fetchLocationDetails()
                     .map { requestResult ->
                         requestResult
+                            // Map the cache to domain model
                             .map { cache -> mapper.map(cache) }
+                            // Process the working hours using the chain processor, to process
+                            // all edge cases.
                             .map { location ->
                                 location.copy(workingDays = processor.process(location.workingDays))
                             }
+                            // Get the current status of the location.
                             .map { location ->
                                 location.copy(status = buildLocationStatus.currentStatus(location.workingDays))
                             }

@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+/**
+ * Cache data source for location details.
+ * */
 interface LocationCacheDataSource {
 
     suspend fun fetchLocation(): Flow<RequestResult<LocationWithWorkingHours>>

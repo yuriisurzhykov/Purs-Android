@@ -62,16 +62,17 @@ import com.github.yuriisurzhykov.purs.location.uikit.theme.DefaultCornerRadius
 import com.github.yuriisurzhykov.purs.location.uikit.theme.DefaultPadding
 import com.github.yuriisurzhykov.purs.location.uikit.theme.SmallPadding
 import com.github.yuriisurzhykov.purs.location.uikit.theme.TinyPadding
+import java.time.LocalDate
 import java.util.Locale
 
 
 @Composable
-fun LocationDetails() {
-    LocationDetailsNew(viewModel = viewModel())
+fun LocationDetails(modifier: Modifier) {
+    LocationDetails(viewModel = viewModel(), modifier = modifier)
 }
 
 @Composable
-internal fun LocationDetailsNew(
+internal fun LocationDetails(
     viewModel: LocationDetailsViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -344,6 +345,11 @@ fun BackgroundImage(modifier: Modifier = Modifier) {
 
 @Composable
 fun WorkingHourView(workingDay: WorkingDay) {
+    val textWeight = if (workingDay.weekDay == LocalDate.now().dayOfWeek) {
+        FontWeight.Bold
+    } else {
+        FontWeight.Normal
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -354,22 +360,25 @@ fun WorkingHourView(workingDay: WorkingDay) {
             text = workingDay.weekDay.getDisplayName(
                 java.time.format.TextStyle.FULL,
                 Locale.getDefault()
-            ), style = MaterialTheme.typography.bodyLarge
+            ), style = MaterialTheme.typography.bodyLarge.copy(fontWeight = textWeight)
         )
         Column {
             if (workingDay.scheduleList.isEmpty()) {
                 Text(
                     text = stringResource(id = R.string.label_location_closed),
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = textWeight)
                 )
             } else if (workingDay.open24H()) {
                 Text(
                     text = stringResource(id = R.string.label_location_open_24h),
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = textWeight)
                 )
             } else {
                 workingDay.scheduleList.forEach { timeSlot ->
-                    LocalTimeTextView(timeSlot)
+                    LocalTimeTextView(
+                        timeSlot,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = textWeight)
+                    )
                 }
             }
         }

@@ -5,20 +5,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import com.github.yuriisurzhykov.purs.domain.model.TimeSlot
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
-fun LocalTimeTextView(time: TimeSlot, modifier: Modifier = Modifier) {
+fun LocalTimeTextView(
+    time: TimeSlot,
+    modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.bodyLarge
+) {
     Text(
         text = stringResource(id = R.string.format_patter_time).format(
             time.startTime.toFormattedString(),
             time.endTime.toFormattedString()
         ),
         modifier = modifier,
-        style = MaterialTheme.typography.bodyLarge
+        style = style
     )
 }
 
