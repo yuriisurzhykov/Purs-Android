@@ -2,7 +2,7 @@ name: Release Build
 on:
   push:
     tags:
-      - 'feature-*'
+      - 'v*'
 jobs:
   Build:
     name: Build/Sign APK
