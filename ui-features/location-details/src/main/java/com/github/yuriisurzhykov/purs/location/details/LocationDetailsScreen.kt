@@ -3,6 +3,9 @@ package com.github.yuriisurzhykov.purs.location.details
 import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -30,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -112,12 +117,33 @@ internal fun LocationDetailsMain(location: Location) {
         modifier = Modifier.padding(DefaultPadding)
     )
 
-    OperatingHoursBox(location = location)
+    Box(modifier = Modifier.fillMaxSize()) {
+        OperatingHoursBox(location = location)
+        Box(
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .align(Alignment.BottomCenter)
+        ) {
+            ArrowAnimation()
+        }
+    }
 }
 
 @Composable
 internal fun OperatingHoursBox(location: Location, modifier: Modifier = Modifier) {
     var expanded by remember { mutableStateOf(false) }
+    val expandIconAngle = remember { Animatable(0f) }
+
+    LaunchedEffect(key1 = expanded) {
+        expandIconAngle.animateTo(
+            targetValue = (expandIconAngle.value + 90) % 180,
+            animationSpec = tween(
+                durationMillis = 300,
+                delayMillis = 0,
+                easing = LinearOutSlowInEasing
+            )
+        )
+    }
 
     Column(
         modifier = modifier
@@ -150,7 +176,7 @@ internal fun OperatingHoursBox(location: Location, modifier: Modifier = Modifier
             contentAlignment = Alignment.CenterStart
         ) {
             Column {
-                Box {
+                Box(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.align(Alignment.CenterStart)
@@ -162,7 +188,9 @@ internal fun OperatingHoursBox(location: Location, modifier: Modifier = Modifier
                     Icon(
                         painter = painterResource(id = R.drawable.chevron_right),
                         contentDescription = null,
-                        modifier = Modifier.align(Alignment.CenterEnd)
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .rotate(expandIconAngle.value)
                     )
                 }
                 Text(
