@@ -42,6 +42,10 @@ android {
 
 dependencies {
 
+    implementation(projects.locationDomain)
+    implementation(projects.locationData.repository)
+    implementation(projects.core)
+
     implementation(platform(libs.androidx.compose.bom))
 
     implementation(libs.androidx.core.ktx)

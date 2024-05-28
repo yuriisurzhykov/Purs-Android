@@ -4,10 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.ksp)
 }
 
-ksp {
-    arg(RoomSchemaArgProvider(File(rootProject.projectDir, "room-schemas")))
-}
-
 android {
     namespace = "com.github.yuriisurzhykov.purs.data.cache"
     compileSdk = ProjectProperties.compileSdkVersion
