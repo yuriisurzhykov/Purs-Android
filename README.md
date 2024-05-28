@@ -1,3 +1,6 @@
+![Super linter](https://github.com/yuriisurzhykov/Purs-Android/actions/workflows/android_lint_checker.yml/badge.svg)
+![Unit tests](https://github.com/yuriisurzhykov/Purs-Android/actions/workflows/android_tests_run.yml/badge.svg)
+
 # About
 
 Purs-Android is an android version of the test application which is concidered as a "Take Home
