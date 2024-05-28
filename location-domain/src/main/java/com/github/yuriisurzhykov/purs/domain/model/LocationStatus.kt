@@ -8,6 +8,10 @@ sealed interface LocationStatus {
         val closeTime: LocalTime
     ) : LocationStatus
 
+    data class Closing(
+        val closeTime: LocalTime
+    ) : LocationStatus
+
     data class ClosingSoon(
         val closeTime: LocalTime,
         val reopenTime: LocalTime
@@ -17,7 +21,7 @@ sealed interface LocationStatus {
         val closeTime: LocalTime,
         val reopenDay: String,
         val reopenTime: LocalTime
-    ): LocationStatus
+    ) : LocationStatus
 
     data class ClosedOpenSoon(
         val reopenTime: LocalTime
