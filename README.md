@@ -1,5 +1,5 @@
-![Super linter](https://github.com/yuriisurzhykov/Purs-Android/actions/workflows/android_lint_checker.yml/badge.svg)
-![Unit tests](https://github.com/yuriisurzhykov/Purs-Android/actions/workflows/android_tests_run.yml/badge.svg)
+![Super linter](https://github.com/yuriisurzhykov/Purs-Android/actions/workflows/android_lint_checker.yaml/badge.svg)
+![Unit tests](https://github.com/yuriisurzhykov/Purs-Android/actions/workflows/android_tests_run.yaml/badge.svg)
 
 # About
 
