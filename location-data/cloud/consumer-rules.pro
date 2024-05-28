@@ -1,0 +1,2 @@
+-keep public class com.github.yuriisurzhykov.purs.data.cloud.model.*
+-keep public class kotlin.Result { *; }

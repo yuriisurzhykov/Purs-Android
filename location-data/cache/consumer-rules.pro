@@ -1,0 +1,2 @@
+-keep public class kotlin.Result { *; }
+-keep public class com.github.yuriisurzhykov.purs.data.cache.model.*

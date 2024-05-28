@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep public class com.github.yuriisurzhykov.purs.data.cache.model.*
+-keep public class com.github.yuriisurzhykov.purs.data.cloud.model.LocationCloud$Base
+-keep public class com.github.yuriisurzhykov.purs.data.cloud.model.WorkingHourCloud$Base
