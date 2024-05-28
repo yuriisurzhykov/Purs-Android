@@ -58,7 +58,7 @@ interface BuildCurrentLocationStatusUseCase {
             }
             return if (currentOpenSchedule != null) {
                 val timeDifference =
-                    currentOpenSchedule.endTime.until(currentTime, ChronoUnit.MINUTES)
+                    currentTime.until(currentOpenSchedule.endTime, ChronoUnit.MINUTES)
                 return if (timeDifference <= 60) {
                     val nextOpenTime = nextWorkingDay.second.startTime
                     val reopenTimeDifference = currentTime.until(nextOpenTime, ChronoUnit.HOURS)
@@ -82,7 +82,8 @@ interface BuildCurrentLocationStatusUseCase {
             currentDate: LocalDate,
             currentTime: LocalTime
         ): Pair<String, TimeSlot>? {
-            var currentIndex = currentDate.dayOfWeek.value
+            var currentIndex = currentDate.dayOfWeek.value - 1
+            var firstLoopRun = true
             while (true) {
                 // Check if we have reached the start point for the work day. Start point means
                 // that we reached the current day of the week. If we have reached the start point,
@@ -93,7 +94,12 @@ interface BuildCurrentLocationStatusUseCase {
                     return if (containsSchedule != null) {
                         Pair(schedule[currentIndex].dayName, containsSchedule)
                     } else {
-                        return null
+                        if (firstLoopRun) {
+                            firstLoopRun = false
+                            continue
+                        } else {
+                            return null
+                        }
                     }
                 }
                 // If we found any other time schedule that is not empty, return it

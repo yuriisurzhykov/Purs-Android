@@ -60,7 +60,8 @@ import com.github.yuriisurzhykov.purs.domain.model.LocationStatus
 import com.github.yuriisurzhykov.purs.domain.model.WorkingDay
 import com.github.yuriisurzhykov.purs.location.uikit.theme.DefaultCornerRadius
 import com.github.yuriisurzhykov.purs.location.uikit.theme.DefaultPadding
-import com.github.yuriisurzhykov.purs.location.uikit.theme.ExtraSmallPadding
+import com.github.yuriisurzhykov.purs.location.uikit.theme.SmallPadding
+import com.github.yuriisurzhykov.purs.location.uikit.theme.TinyPadding
 import java.util.Locale
 
 
@@ -98,7 +99,13 @@ internal fun Content(state: State, modifier: Modifier = Modifier) {
             }
         }
         if (state is State.Error) {
-            Toast.makeText(LocalContext.current, state.error?.message, Toast.LENGTH_SHORT).show()
+            if (state.location != null) {
+                LocationDetailsMain(location = state.location)
+            }
+            state.error?.let {
+                Toast.makeText(LocalContext.current, it.message.orEmpty(), Toast.LENGTH_SHORT)
+                    .show()
+            }
         }
     }
 }
@@ -176,21 +183,29 @@ internal fun OperatingHoursBox(location: Location, modifier: Modifier = Modifier
             contentAlignment = Alignment.CenterStart
         ) {
             Column {
-                Box(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.align(Alignment.CenterStart)
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        location.status?.let { LocationStatusText(it) }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        location.status?.let { LocationStatusBadge(it) }
+                        location.status?.let { status ->
+                            LocationStatusText(
+                                status,
+                                modifier = Modifier.padding(end = DefaultPadding)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(SmallPadding))
+                        location.status?.let { status ->
+                            LocationStatusBadge(status)
+                        }
                     }
                     Icon(
                         painter = painterResource(id = R.drawable.chevron_right),
                         contentDescription = null,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .rotate(expandIconAngle.value)
+                        modifier = Modifier.rotate(expandIconAngle.value)
                     )
                 }
                 Text(
@@ -210,12 +225,15 @@ internal fun OperatingHoursBox(location: Location, modifier: Modifier = Modifier
                 modifier = Modifier
                     .background(
                         colorResource(id = R.color.background_card_semitransprent),
-                        shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                        shape = RoundedCornerShape(
+                            bottomStart = DefaultCornerRadius,
+                            bottomEnd = DefaultCornerRadius
+                        )
                     )
                     .padding(DefaultPadding)
             ) {
                 HorizontalDivider(color = Color.Gray, thickness = 1.dp)
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(TinyPadding))
                 LazyColumn {
                     items(location.workingDays.size) {
                         val workingHour = location.workingDays.toList()[it]
@@ -257,43 +275,51 @@ fun ColorBadge(@ColorRes color: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LocationStatusText(status: LocationStatus) {
+fun LocationStatusText(status: LocationStatus, modifier: Modifier = Modifier) {
     when (status) {
         is LocationStatus.Open -> LocationStatusTextView(
             text = stringResource(id = R.string.label_location_open).format(
-                status.closeTime
-            )
+                status.closeTime.toFormattedString()
+            ),
+            modifier = modifier
         )
 
         is LocationStatus.ClosingSoon -> LocationStatusTextView(
             text = stringResource(id = R.string.label_location_closing_soon).format(
-                status.closeTime,
-                status.reopenTime
-            )
+                status.closeTime.toFormattedString(),
+                status.reopenTime.toFormattedString()
+            ),
+            modifier = modifier
         )
 
         is LocationStatus.ClosedOpenSoon -> LocationStatusTextView(
             text = stringResource(id = R.string.label_location_closed_opens_soon).format(
-                status.reopenTime
-            )
+                status.reopenTime.toFormattedString()
+            ),
+            modifier = modifier
         )
 
         is LocationStatus.Closed -> LocationStatusTextView(
             text = stringResource(id = R.string.label_location_closed_opens_then).format(
                 status.openDay,
-                status.openTime
-            )
+                status.openTime.toFormattedString()
+            ),
+            modifier = modifier
         )
 
         is LocationStatus.ClosingSoonLongReopen -> LocationStatusTextView(
             text = stringResource(id = R.string.label_location_closing_soon_reopen_then).format(
-                status.closeTime,
+                status.closeTime.toFormattedString(),
                 status.reopenDay,
-                status.reopenTime
-            )
+                status.reopenTime.toFormattedString()
+            ),
+            modifier = modifier
         )
 
-        is LocationStatus.ClosedFully -> LocationStatusTextView(text = stringResource(id = R.string.label_location_closed))
+        is LocationStatus.ClosedFully -> LocationStatusTextView(
+            text = stringResource(id = R.string.label_location_closed),
+            modifier = modifier
+        )
     }
 }
 
@@ -321,7 +347,7 @@ fun WorkingHourView(workingDay: WorkingDay) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(ExtraSmallPadding),
+            .padding(TinyPadding),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
@@ -342,14 +368,8 @@ fun WorkingHourView(workingDay: WorkingDay) {
                     style = MaterialTheme.typography.bodyLarge
                 )
             } else {
-                workingDay.scheduleList.forEach {
-                    Text(
-                        text = stringResource(id = R.string.format_patter_time).format(
-                            it.startTime,
-                            it.endTime
-                        ),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                workingDay.scheduleList.forEach { timeSlot ->
+                    LocalTimeTextView(timeSlot)
                 }
             }
         }

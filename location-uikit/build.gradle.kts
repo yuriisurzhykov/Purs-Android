@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.github.yuriisurzhykov.purs.location.details"
+    namespace = "com.github.yuriisurzhykov.purs.uikit"
     compileSdk = ProjectProperties.compileSdkVersion
 
     defaultConfig {

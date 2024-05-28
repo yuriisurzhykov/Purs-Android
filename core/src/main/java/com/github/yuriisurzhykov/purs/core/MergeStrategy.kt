@@ -1,10 +1,13 @@
 package com.github.yuriisurzhykov.purs.core
 
 interface MergeStrategy<E> {
+    // right is cache, left is cloud
     fun merge(right: E, left: E): E
 }
 
 class RequestResponseMergeStrategy<T : Any> : MergeStrategy<RequestResult<T>> {
+
+    // right is cache, left is cloud
     override fun merge(
         right: RequestResult<T>,
         left: RequestResult<T>
