@@ -3,7 +3,6 @@ package com.github.yuriisurzhykov.purs.domain.usecase
 import com.github.yuriisurzhykov.purs.core.RequestResult
 import com.github.yuriisurzhykov.purs.core.map
 import com.github.yuriisurzhykov.purs.data.repository.LocationRepository
-import com.github.yuriisurzhykov.purs.domain.chain.MergeTimeSlotsUseCase
 import com.github.yuriisurzhykov.purs.domain.chain.WorkingHourChainProcessor
 import com.github.yuriisurzhykov.purs.domain.mapper.LocationCacheToDomainMapper
 import com.github.yuriisurzhykov.purs.domain.model.Location
@@ -20,24 +19,22 @@ interface BuildWorkingHoursListUseCase {
     class Base @Inject constructor(
         private val repository: LocationRepository,
         private val mapper: LocationCacheToDomainMapper,
-        private val mergeTimeSlotsUseCase: MergeTimeSlotsUseCase,
-        private val processor: WorkingHourChainProcessor
+        private val processor: WorkingHourChainProcessor,
+        private val buildLocationStatus: BuildCurrentLocationStatusUseCase
     ) : BuildWorkingHoursListUseCase {
 
         override fun workingHours(): Flow<RequestResult<Location>> {
             return flow {
                 val repositoryResult = repository.fetchLocationDetails()
                     .map { requestResult ->
-                        requestResult.map { cache ->
-                            val mapped = mapper.map(cache)
-                            mapped.copy(
-                                workingHours = mapped.workingHours.map {
-                                    mergeTimeSlotsUseCase.mergeTimeSlots(it)
-                                }.toSet()
-                            )
-                        }.map {
-                            it.copy(workingHours = processor.process(it.workingHours))
-                        }
+                        requestResult
+                            .map { cache -> mapper.map(cache) }
+                            .map { location ->
+                                location.copy(workingDays = processor.process(location.workingDays))
+                            }
+                            .map { location ->
+                                location.copy(status = buildLocationStatus.currentStatus(location.workingDays))
+                            }
                     }
                 emitAll(repositoryResult)
             }

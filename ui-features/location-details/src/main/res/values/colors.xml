@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_green">#4AA548</color>
+    <color name="background_card_semitransprent">#C2F7F3F3</color>
+    <color name="color_yellow">#FEE362</color>
+    <color name="color_red">#DE453A</color>
+</resources>

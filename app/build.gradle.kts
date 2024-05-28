@@ -84,6 +84,7 @@ dependencies {
     implementation(projects.locationDomain)
     implementation(projects.locationData.repository)
     implementation(projects.core)
+    implementation(projects.locationUikit)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

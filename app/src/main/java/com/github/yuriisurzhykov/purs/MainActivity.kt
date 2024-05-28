@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.yuriisurzhykov.purs.location.details.LocationDetails
-import com.github.yuriisurzhykov.purs.ui.theme.PursTestTheme
+import com.github.yuriisurzhykov.purs.location.uikit.theme.PursTestTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

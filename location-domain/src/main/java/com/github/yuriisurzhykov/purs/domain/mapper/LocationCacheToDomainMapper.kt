@@ -8,12 +8,14 @@ import javax.inject.Inject
 interface LocationCacheToDomainMapper : Mapper<LocationWithWorkingHours, Location> {
 
     class Base @Inject constructor(
-        private val workingHourMapper: WorkingHourCacheToDomainMapper
+        private val workingHourMapper: WorkingHourCacheToDomainMapper,
     ) : LocationCacheToDomainMapper {
         override fun map(source: LocationWithWorkingHours): Location {
+            val workingHours = workingHourMapper.map(source.workingHours)
             return Location(
                 source.location.locationName,
-                workingHourMapper.map(source.workingHours)
+                null,
+                workingHours
             )
         }
     }

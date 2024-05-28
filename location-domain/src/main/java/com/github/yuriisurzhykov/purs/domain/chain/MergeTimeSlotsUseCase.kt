@@ -1,15 +1,15 @@
 package com.github.yuriisurzhykov.purs.domain.chain
 
 import com.github.yuriisurzhykov.purs.domain.model.TimeSlot
-import com.github.yuriisurzhykov.purs.domain.model.WorkingHour
+import com.github.yuriisurzhykov.purs.domain.model.WorkingDay
 import javax.inject.Inject
 
 interface MergeTimeSlotsUseCase {
 
-    fun mergeTimeSlots(workDay: WorkingHour): WorkingHour
+    fun mergeTimeSlots(workDay: WorkingDay): WorkingDay
 
     class Base @Inject constructor() : MergeTimeSlotsUseCase {
-        override fun mergeTimeSlots(workDay: WorkingHour): WorkingHour {
+        override fun mergeTimeSlots(workDay: WorkingDay): WorkingDay {
             val timeSlots = workDay.scheduleList
             if (timeSlots.isEmpty()) return workDay
 

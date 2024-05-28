@@ -1,6 +1,6 @@
 package com.github.yuriisurzhykov.purs.domain.chain
 
-import com.github.yuriisurzhykov.purs.domain.model.WorkingHour
+import com.github.yuriisurzhykov.purs.domain.model.WorkingDay
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -10,10 +10,10 @@ interface MergeCrossDayTimeSlotsUseCase : ProcessWorkingHoursCollection{
         private val sortMissingDaysUseCase: SortMissingDaysUseCase
     ) : MergeCrossDayTimeSlotsUseCase {
 
-        override fun process(collection: Collection<WorkingHour>): Collection<WorkingHour> {
+        override fun process(collection: Collection<WorkingDay>): Collection<WorkingDay> {
             if (collection.isEmpty() || collection.size == 1) return collection
 
-            val mergedTimeSlots = mutableSetOf<WorkingHour>()
+            val mergedTimeSlots = mutableSetOf<WorkingDay>()
             val sortedTimeSlots = sortMissingDaysUseCase.process(collection).iterator()
 
             // Get the first time slot

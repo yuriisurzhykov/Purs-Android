@@ -21,8 +21,10 @@ import com.github.yuriisurzhykov.purs.domain.chain.MergeTimeSlotsUseCase
 import com.github.yuriisurzhykov.purs.domain.chain.SortMissingDaysUseCase
 import com.github.yuriisurzhykov.purs.domain.chain.WorkingHourChainProcessor
 import com.github.yuriisurzhykov.purs.domain.mapper.LocationCacheToDomainMapper
+import com.github.yuriisurzhykov.purs.domain.mapper.StringToDayOfWeekMapper
 import com.github.yuriisurzhykov.purs.domain.mapper.StringToLocalTimeMapper
 import com.github.yuriisurzhykov.purs.domain.mapper.WorkingHourCacheToDomainMapper
+import com.github.yuriisurzhykov.purs.domain.usecase.BuildCurrentLocationStatusUseCase
 import com.github.yuriisurzhykov.purs.domain.usecase.BuildWorkingHoursListUseCase
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -82,13 +84,13 @@ object PursAppModule {
     fun provideBuildWorkingHoursListUseCase(
         repository: LocationRepository,
         mapper: LocationCacheToDomainMapper,
-        mergeTimeSlotsUseCase: MergeTimeSlotsUseCase,
-        processor: WorkingHourChainProcessor
+        processor: WorkingHourChainProcessor,
+        buildLocationStatus: BuildCurrentLocationStatusUseCase
     ): BuildWorkingHoursListUseCase = BuildWorkingHoursListUseCase.Base(
         repository,
         mapper,
-        mergeTimeSlotsUseCase,
-        processor
+        processor,
+        buildLocationStatus
     )
 
     @Provides
@@ -122,13 +124,28 @@ object PursAppModule {
 
     @Provides
     @Singleton
-    fun provideLocationCacheToDomainMapper(mapper: WorkingHourCacheToDomainMapper): LocationCacheToDomainMapper =
+    fun provideLocationCacheToDomainMapper(
+        mapper: WorkingHourCacheToDomainMapper
+    ): LocationCacheToDomainMapper =
         LocationCacheToDomainMapper.Base(mapper)
 
     @Provides
     @Singleton
-    fun provideWorkingHourCacheToDomainMapper(mapper: StringToLocalTimeMapper): WorkingHourCacheToDomainMapper =
-        WorkingHourCacheToDomainMapper.Base(mapper)
+    fun provideBuildCurrentLocationStatusUseCase(): BuildCurrentLocationStatusUseCase =
+        BuildCurrentLocationStatusUseCase.Base()
+
+    @Provides
+    @Singleton
+    fun provideWorkingHourCacheToDomainMapper(
+        mapper: StringToLocalTimeMapper,
+        mergeTimeSlotsUseCase: MergeTimeSlotsUseCase,
+        stringToDayMapper: StringToDayOfWeekMapper
+    ): WorkingHourCacheToDomainMapper =
+        WorkingHourCacheToDomainMapper.Base(mapper, mergeTimeSlotsUseCase, stringToDayMapper)
+
+    @Provides
+    @Singleton
+    fun provideStringToDayOfWeekMapper(): StringToDayOfWeekMapper = StringToDayOfWeekMapper.Base()
 
     @Provides
     @Singleton
