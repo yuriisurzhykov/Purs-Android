@@ -22,7 +22,11 @@ abstract class LocationDao {
     abstract suspend fun insert(workingHour: WorkingHourCache): Long
 
     @Transaction
-    suspend fun insert(location: LocationWithWorkingHours) {
+    @Query("DELETE FROM locations WHERE locationId=:locationId")
+    abstract suspend fun delete(locationId: Long)
+
+    @Transaction
+    open suspend fun insert(location: LocationWithWorkingHours) {
         val locationId = insert(location.location)
         location.workingHours.forEach { workingHour ->
             insert(workingHour.copy(locationId = locationId))

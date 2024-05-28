@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+/**
+ * Cache data source for location details.
+ * */
 interface LocationCacheDataSource {
 
     suspend fun fetchLocation(): Flow<RequestResult<LocationWithWorkingHours>>
@@ -38,6 +41,7 @@ interface LocationCacheDataSource {
         }
 
         override suspend fun persistLocation(location: LocationWithWorkingHours) {
+            locationDao.delete(getLocationId.locationId())
             val newLocation = location.location.copy(locationId = getLocationId.locationId())
             locationDao.insert(location.copy(location = newLocation))
         }

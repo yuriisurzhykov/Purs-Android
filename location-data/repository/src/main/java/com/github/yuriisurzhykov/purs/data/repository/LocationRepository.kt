@@ -8,9 +8,7 @@ import com.github.yuriisurzhykov.purs.data.cache.model.LocationWithWorkingHours
 import com.github.yuriisurzhykov.purs.data.cloud.LocationCloudDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
@@ -35,15 +33,11 @@ interface LocationRepository {
                     response.map { cacheDataSource.persistLocation(it) }
                 }
 
-            // Produce initial state that is loading
-            val initial =
-                flowOf<RequestResult<LocationWithWorkingHours>>(RequestResult.InProgress())
-
             // Combine two data sources together with the strategy based on cloud and cache results
             val combinedSources = cachedResponse.combine(cloudResponse) { cache, cloud ->
                 sourceMergeStrategy.merge(cache, cloud)
             }
-            return merge(initial, combinedSources)
+            return combinedSources
         }
     }
 }

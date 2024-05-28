@@ -4,6 +4,16 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.kotlin.ksp)
+}
+
+ksp {
+    arg(RoomSchemaArgProvider(File(rootProject.projectDir, "room-schemas")))
+}
+
+hilt {
+    enableAggregatingTask = false
 }
 
 android {
@@ -69,6 +79,13 @@ android {
 
 dependencies {
 
+    implementation(projects.uiFeatures.locationDetails)
+    implementation(projects.locationData.cache)
+    implementation(projects.locationDomain)
+    implementation(projects.locationData.repository)
+    implementation(projects.core)
+    implementation(projects.locationUikit)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -77,6 +94,16 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    implementation(libs.retrofit)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
+
+    implementation(libs.dagger.hilt.android)
+    ksp(libs.dagger.hilt.compiler)
+    ksp(libs.androidx.room.compiler)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

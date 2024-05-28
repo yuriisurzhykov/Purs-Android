@@ -42,6 +42,11 @@ android {
 
 dependencies {
 
+    implementation(projects.locationDomain)
+    implementation(projects.locationData.repository)
+    implementation(projects.core)
+    implementation(projects.locationUikit)
+
     implementation(platform(libs.androidx.compose.bom))
 
     implementation(libs.androidx.core.ktx)
@@ -50,8 +55,8 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    debugImplementation(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 

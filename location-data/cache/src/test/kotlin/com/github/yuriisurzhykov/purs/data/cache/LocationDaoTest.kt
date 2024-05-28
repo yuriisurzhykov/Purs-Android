@@ -41,5 +41,7 @@ class LocationDaoTest {
             persistedWorkingHour = workingHour
             return workingHour.workingHourId
         }
+
+        override suspend fun delete(locationId: Long) = Unit
     }
 }
