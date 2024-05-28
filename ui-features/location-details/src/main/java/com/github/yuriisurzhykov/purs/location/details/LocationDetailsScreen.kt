@@ -251,6 +251,7 @@ fun LocationStatusBadge(status: LocationStatus, modifier: Modifier = Modifier) {
     when (status) {
         is LocationStatus.Open -> ColorBadge(color = R.color.color_green, modifier)
 
+        is LocationStatus.Closing,
         is LocationStatus.ClosingSoon,
         is LocationStatus.ClosingSoonLongReopen -> ColorBadge(
             color = R.color.color_yellow,
@@ -280,6 +281,13 @@ fun LocationStatusText(status: LocationStatus, modifier: Modifier = Modifier) {
     when (status) {
         is LocationStatus.Open -> LocationStatusTextView(
             text = stringResource(id = R.string.label_location_open).format(
+                status.closeTime.toFormattedString()
+            ),
+            modifier = modifier
+        )
+
+        is LocationStatus.Closing -> LocationStatusTextView(
+            text = stringResource(id = R.string.label_location_closing).format(
                 status.closeTime.toFormattedString()
             ),
             modifier = modifier
