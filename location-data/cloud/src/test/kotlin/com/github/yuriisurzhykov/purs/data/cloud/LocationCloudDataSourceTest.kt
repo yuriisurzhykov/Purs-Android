@@ -4,7 +4,7 @@ import com.github.yuriisurzhykov.purs.core.RequestResult
 import com.github.yuriisurzhykov.purs.data.cloud.model.LocationCloud
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -22,8 +22,8 @@ class LocationCloudDataSourceTest {
         coEvery { locationService.fetchLocation() } returns Response.success(mockLocationCloud)
         val dataSource = LocationCloudDataSource.Base(locationService)
 
-        val actual = dataSource.fetchLocation().first()
-        val expected = RequestResult.Success(mockLocationCloud)
+        val actual = dataSource.fetchLocation().toList()
+        val expected = listOf(RequestResult.InProgress(), RequestResult.Success(mockLocationCloud))
 
         assertEquals(expected, actual)
     }
@@ -34,8 +34,8 @@ class LocationCloudDataSourceTest {
         coEvery { locationService.fetchLocation() } returns Response.success(null)
         val dataSource = LocationCloudDataSource.Base(locationService)
 
-        val actual = dataSource.fetchLocation().first()
-        val expected = RequestResult.Error(null, null)
+        val actual = dataSource.fetchLocation().toList()
+        val expected = listOf(RequestResult.InProgress(), RequestResult.Error(null, null))
 
         assertEquals(expected, actual)
     }
@@ -49,8 +49,11 @@ class LocationCloudDataSourceTest {
         )
         val dataSource = LocationCloudDataSource.Base(locationService)
 
-        val actual = dataSource.fetchLocation().first()
-        val expected = RequestResult.Error(null, ServerError(404, "Page not found"))
+        val actual = dataSource.fetchLocation().toList()
+        val expected = listOf(
+            RequestResult.InProgress(),
+            RequestResult.Error(null, ServerError(404, "Page not found"))
+        )
 
         assertEquals(expected, actual)
     }
@@ -62,8 +65,9 @@ class LocationCloudDataSourceTest {
         coEvery { locationService.fetchLocation() } throws exceptionToThrow
         val dataSource = LocationCloudDataSource.Base(locationService)
 
-        val actual = dataSource.fetchLocation().first()
-        val expected = RequestResult.Error(null, exceptionToThrow)
+        val actual = dataSource.fetchLocation().toList()
+        val expected =
+            listOf(RequestResult.InProgress(), RequestResult.Error(null, exceptionToThrow))
 
         assertEquals(expected, actual)
     }
