@@ -75,10 +75,13 @@ interface BuildCurrentLocationStatusUseCase {
                 }
             }
             return if (currentOpenSchedule != null) {
+                // If the current schedule is open 24h for today, return the location status that
+                // it open
                 if (currentOpenSchedule.startTime == LocalTime.MIDNIGHT &&
                     currentOpenSchedule.endTime == LocalTime.MIDNIGHT) {
                     LocationStatus.Open(currentOpenSchedule.endTime)
                 } else {
+                    // Calculate time difference between current time and the end time of the location
                     val timeDifference =
                         if (currentOpenSchedule.endTime < currentOpenSchedule.startTime) {
                             currentTime.until(LocalTime.MAX, ChronoUnit.MINUTES) +
@@ -96,6 +99,8 @@ interface BuildCurrentLocationStatusUseCase {
                             return LocationStatus.Closing(currentOpenSchedule.endTime)
                         }
 
+                        // Calculate time difference between current time and the start time of the
+                        // next schedule and returns location status based on it
                         val nextOpenTime = nextWorkingDay.second.startTime
                         val reopenTimeDifference = currentTime.until(nextOpenTime, ChronoUnit.HOURS)
                         if (reopenTimeDifference > 24) {
