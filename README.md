@@ -412,9 +412,9 @@ keyPassword=Purs2024
 
 ## What TO DO next
 Several enhancements are needed to finish the task:
-- [ ] Update the current location status perioduically to keep information up to date for the user
+- [ ] Update the current location status periodically to keep information up to date for the user
 - [ ] Fix expand arrow animation which turns wrong angle if user clicks too fast
-- [ ] Blur thee background when user expand the location hours section
+- [ ] Blur the background when user expand the location hours section
 - [ ] Edge-to-edge stoped working properly, need to fix it
 - [ ] Fix working hours alignment on expandable section
 </details>
