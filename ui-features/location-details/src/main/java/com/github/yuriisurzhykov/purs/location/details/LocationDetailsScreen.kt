@@ -76,7 +76,7 @@ internal fun LocationDetails(
     viewModel: LocationDetailsViewModel,
     modifier: Modifier = Modifier
 ) {
-    val state: State by viewModel.detailsResponse.collectAsStateWithLifecycle()
+    val state: State by viewModel.detailsResponse.collectAsStateWithLifecycle(lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current)
     BackgroundImage(modifier = modifier.fillMaxSize())
     if (state != State.None) {
         Content(state = state, modifier = modifier.fillMaxSize())

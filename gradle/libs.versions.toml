@@ -11,7 +11,7 @@ espressoCore = "3.5.1"
 androidx-lifecycle = "2.8.1"
 activityCompose = "1.9.0"
 composeBom = "2024.05.00"
-androidx-compose-runtime = "1.6.7"
+androidx-compose-runtime = "1.7.0-beta02"
 androidx-compose-kotlin-compiler-ext = "1.5.14"
 retrofit = "2.9.0"
 kotlinx-coroutines = "1.8.0"
@@ -50,6 +50,7 @@ androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", versi
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "androidx-lifecycle" }
 
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
@@ -88,7 +89,6 @@ androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomato
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
 androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
-androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "androidx-lifecycle" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
