@@ -8,7 +8,7 @@ junit = "4.13.2"
 mockk = "1.13.11"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-androidx-lifecycle = "2.8.0"
+androidx-lifecycle = "2.8.1"
 activityCompose = "1.9.0"
 composeBom = "2024.05.00"
 androidx-compose-runtime = "1.6.7"
@@ -17,7 +17,7 @@ retrofit = "2.9.0"
 kotlinx-coroutines = "1.8.0"
 retrofitAdaptersResult = "1.0.9"
 retrofitConverterKotlinxSerialization = "1.0.0"
-appcompat = "1.6.1"
+appcompat = "1.7.0"
 material = "1.12.0"
 room = "2.6.1"
 ksp = "1.9.24-1.0.20"
@@ -88,6 +88,7 @@ androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomato
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
 androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
+androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "androidx-lifecycle" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
