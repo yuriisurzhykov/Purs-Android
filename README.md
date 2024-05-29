@@ -407,6 +407,18 @@ keyPassword=Purs2024
 **NOTE:** You can leave all variables empty if you just want to make a debug build
 </details>
 
+<details>
+  <summary>TODO Next</summary>
+
+## What TO DO next
+Several enhancements are needed to finish the task:
+- [ ] Update the current location status perioduically to keep information up to date for the user
+- [ ] Fix expand arrow animation which turns wrong angle if user clicks too fast
+- [ ] Blur thee background when user expand the location hours section
+- [ ] Edge-to-edge stoped working properly, need to fix it
+- [ ] Fix working hours alignment on expandable section
+</details>
+
 # Contacts
 
 Email: yuriisurzhykov@gmail.com
