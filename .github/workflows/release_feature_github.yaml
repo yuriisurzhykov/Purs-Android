@@ -1,12 +1,18 @@
 name: Release Build
+
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [ "main" ]
+    tags: [ "v*" ]
+
+  pull_request:
+    branches: [ "main" ]
+
 jobs:
-  Build:
-    name: Build/Sign APK
+  release_build:
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 19
@@ -16,82 +22,54 @@ jobs:
           distribution: 'corretto'
           cache: gradle
 
-      - name: Get Tag
-        id: var
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - name: Cache Gradle and wrapper
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
 
-      - name: Configure Keystore
+      #1
+      - name: Decode Keystore
+        env:
+          ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+          SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
+
         run: |
-          echo "$ANDROID_KEYSTORE_FILE" > keystore.jks.b64
-          base64 -d -i keystore.jks.b64 > app/keystore.jks
-          echo "keystoreFile=keystore.jks" >> signing.properties
-          echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> signing.properties
-          echo "keystorePassword=$KEYSTORE_STORE_PASSWORD" >> signing.properties
-          echo "::debug::storePassword=$KEYSTORE_STORE_PASSWORD"
-          echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> signing.properties
+          echo $ENCODED_STRING > keystore-b64.txt
+          base64 -d keystore-b64.txt > $SIGNING_KEY_STORE_PATH
+
+      #2
+      - name: Build Release apk
         env:
-          ANDROID_KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
-          KEYSTORE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+        run: ./gradlew assembleRelease
 
-      - name: Build APK
-        id: build
-        run: bash ./gradlew assembleRelease
+      - name: Build Release bundle
         env:
-          VERSION_CODE: ${{ env.GITHUB_RUN_NUMBER }}
-          VERSION_NAME: ${{ github.event.inputs.versionName }}
-
-      - name: Sign APK
-        id: sign_apk
-        uses: r0adkll/sign-android-release@v1
+          SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+        run: ./gradlew bundleRelease
+      #3
+      - name: Upload Release Build to Artifacts
+        uses: actions/upload-artifact@v3
         with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.KEYSTORE_FILE }}
-          alias: ${{ secrets.KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-
-      - name: Make artifact
-        uses: actions/upload-artifact@v2
+          name: release-artifacts
+          paths: |
+            app/build/outputs/apk/release/
+            app/build/outputs/bundle/release/
+      #4
+      - name: Create Github Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: app-release-signed
-          path: ${{steps.sign_apk.outputs.signedReleaseFile}}
-
-      - name: Build Changelog
-        id: changelog
-        uses: ardalanamini/auto-changelog@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          commit-types: |
-            feat: New Features
-            fix: Bug Fixes
-            build: Build System & Dependencies
-            perf: Performance Improvements
-            docs: Documentation
-            test: Tests
-            refactor: Refactors
-            chore: Chores
-            ci: CI
-            style: Code Style
-            revert: Reverts
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: ${{ steps.changelog.outputs.changelog }} ;
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Upload APK
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{steps.sign_apk.outputs.signedReleaseFile}}
-          asset_name: app-release-signed-${{ steps.var.outputs.tag }}.apk
-          asset_content_type: application/zip
+          generate_release_notes: true
+          prerelease: true
+          files: |
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/bundle/release/app-release.aab

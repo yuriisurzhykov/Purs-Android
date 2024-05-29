@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -35,14 +32,10 @@ android {
 
     signingConfigs {
         create("release") {
-            val properties = Properties()
-            FileInputStream(file("../signing.properties")).use { stream ->
-                properties.load(stream)
-            }
-            storeFile = file(properties.getProperty("keystoreFile"))
-            storePassword = properties.getProperty("keystorePassword").toString()
-            keyAlias = properties.getProperty("keyAlias").toString()
-            keyPassword = properties.getProperty("keyPassword").toString()
+            storeFile = file("keystore.jks")
+            storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+            keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
         }
     }
 
