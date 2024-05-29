@@ -34,7 +34,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.github.yuriisurzhykov.purs.domain.model.Location
@@ -76,7 +76,7 @@ internal fun LocationDetails(
     viewModel: LocationDetailsViewModel,
     modifier: Modifier = Modifier
 ) {
-    val state = viewModel.detailsResponse.collectAsState().value
+    val state: State by viewModel.detailsResponse.collectAsStateWithLifecycle(lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current)
     BackgroundImage(modifier = modifier.fillMaxSize())
     if (state != State.None) {
         Content(state = state, modifier = modifier.fillMaxSize())
