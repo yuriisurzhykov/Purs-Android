@@ -377,7 +377,7 @@ Several enhancements are needed to finish the task:
 - [ ] Fix expand arrow animation which turns wrong angle if user clicks too fast [#45](https://github.com/yuriisurzhykov/Purs-Android/issues/45)
 - [ ] Blur the background when user expand the location hours section [#46](https://github.com/yuriisurzhykov/Purs-Android/issues/46)
 - [ ] Edge-to-edge stoped working properly, need to fix it [#47](https://github.com/yuriisurzhykov/Purs-Android/issues/47)
-- [ ] Fix working hours alignment on expandable section [#48](https://github.com/yuriisurzhykov/Purs-Android/issues/46)
+- [ ] Fix working hours alignment on expandable section [#48](https://github.com/yuriisurzhykov/Purs-Android/issues/48)
 </details>
 
 # Contacts
