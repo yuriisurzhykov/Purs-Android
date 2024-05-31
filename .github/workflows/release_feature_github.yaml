@@ -1,8 +1,9 @@
 name: Release Build
 
 on:
-  pull_request:
-    branches: [ "main" ]
+  push:
+    tags:
+      - "^v([0-9]+\.?)+$"
 
 jobs:
   build:
@@ -119,7 +120,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.apk-path.outputs.apk_file }}
-          asset_name: app-release-signed-${{ github.ref }}.apk
+          asset_name: app-release-${{ github.ref_name }}.apk
           asset_content_type: application/zip
 
       - name: Upload AAB
@@ -129,5 +130,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.aab-path.outputs.aab_file }}
-          asset_name: app-release-signed-${{ github.ref }}.aab
+          asset_name: app-release-${{ github.ref_name }}.aab
           asset_content_type: application/zip
