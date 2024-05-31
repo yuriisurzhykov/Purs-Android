@@ -385,7 +385,9 @@ fun WorkingHourView(workingDay: WorkingDay) {
                 workingDay.scheduleList.forEach { timeSlot ->
                     LocalTimeTextView(
                         timeSlot,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = textWeight)
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = textWeight),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End
                     )
                 }
             }
