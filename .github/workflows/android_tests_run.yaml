@@ -20,11 +20,16 @@ jobs:
           distribution: 'corretto'
           cache: gradle
 
+      - name: Setup Gradle Cache
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-home-cache-cleanup: true
+
       - name: Configure Keystore
         run: |
           echo "$ANDROID_KEYSTORE_FILE" > app/keystore.jks.b64
           base64 -d -i app/keystore.jks.b64 > app/keystore.jks
-          echo "keystoreFile=app/keystore.jks" >> signing.properties
+          echo "keystoreFile=keystore.jks" >> signing.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> signing.properties
           echo "keystorePassword=$KEYSTORE_STORE_PASSWORD" >> signing.properties
           echo "::debug::storePassword=$KEYSTORE_STORE_PASSWORD"

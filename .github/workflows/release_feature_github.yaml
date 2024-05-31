@@ -1,14 +1,17 @@
 name: Release Build
+
 on:
   push:
     tags:
-      - 'v*'
+      - "^v([0-9]+\.?)+$"
+
 jobs:
-  Build:
-    name: Build/Sign APK
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Android project
+        uses: actions/checkout@v3
       - name: Set up JDK 19
         uses: actions/setup-java@v3
         with:
@@ -17,13 +20,18 @@ jobs:
           cache: gradle
 
       - name: Get Tag
-        id: var
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+        id: vars
+        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+
+      - name: Setup Gradle Cache
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-home-cache-cleanup: true
 
       - name: Configure Keystore
         run: |
-          echo "$ANDROID_KEYSTORE_FILE" > keystore.jks.b64
-          base64 -d -i keystore.jks.b64 > app/keystore.jks
+          echo "$ANDROID_KEYSTORE_FILE" > app/keystore.jks.b64
+          base64 -d -i app/keystore.jks.b64 > app/keystore.jks
           echo "keystoreFile=keystore.jks" >> signing.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> signing.properties
           echo "keystorePassword=$KEYSTORE_STORE_PASSWORD" >> signing.properties
@@ -35,32 +43,39 @@ jobs:
           KEYSTORE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
 
-      - name: Build APK
-        id: build
-        run: bash ./gradlew assembleRelease
-        env:
-          VERSION_CODE: ${{ env.GITHUB_RUN_NUMBER }}
-          VERSION_NAME: ${{ github.event.inputs.versionName }}
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-      - name: Sign APK
-        id: sign_apk
-        uses: r0adkll/sign-android-release@v1
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.KEYSTORE_FILE }}
-          alias: ${{ secrets.KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
+      - name: Build with Gradle
+        run: ./gradlew assembleRelease bundleRelease
 
-      - name: Make artifact
-        uses: actions/upload-artifact@v2
+      - name: Get AAB file path
+        id: aab-path
+        run: |
+          # Find the AAB file, accounting for potential variations in the filename.
+          aab_file=$(find . -name '*.aab' -type f -path "*build/outputs/bundle/release/*" | head -1) 
+          echo "aab_file=${aab_file}" >> $GITHUB_OUTPUT
+
+      - name: Get APK file path
+        id: apk-path
+        run: |
+          # Find the APK file, accounting for potential variations in the filename.
+          apk_file=$(find . -name '*.apk' -type f -path "*build/outputs/apk/release/*" | head -1) 
+          echo "apk_file=${apk_file}" >> $GITHUB_OUTPUT
+
+      - name: Upload AAB file to Artifacts
+        uses: actions/upload-artifact@v3
         with:
-          name: app-release-signed
-          path: ${{steps.sign_apk.outputs.signedReleaseFile}}
+          path: ${{ steps.aab-path.outputs.aab_file }}
+
+      - name: Upload APK file to Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ steps.apk-path.outputs.apk_file }}
 
       - name: Build Changelog
-        id: changelog
         uses: ardalanamini/auto-changelog@v4
+        id: changelog
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           commit-types: |
@@ -75,23 +90,45 @@ jobs:
             ci: CI
             style: Code Style
             revert: Reverts
+          default-commit-type: Other Changes
+          release-name: v1.0.0
+          release-name-prefix: ""
+          mention-authors: true
+          mention-new-contributors: true
+          include-compare-link: true
+          include-pr-links: true
+          include-commit-links: true
+          semver: true
+          use-github-autolink: true
 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: ${{ steps.changelog.outputs.changelog }} ;
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: false
 
       - name: Upload APK
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{steps.sign_apk.outputs.signedReleaseFile}}
-          asset_name: app-release-signed-${{ steps.var.outputs.tag }}.apk
+          asset_path: ${{ steps.apk-path.outputs.apk_file }}
+          asset_name: app-release-${{ github.ref_name }}.apk
+          asset_content_type: application/zip
+
+      - name: Upload AAB
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.aab-path.outputs.aab_file }}
+          asset_name: app-release-${{ github.ref_name }}.aab
           asset_content_type: application/zip
