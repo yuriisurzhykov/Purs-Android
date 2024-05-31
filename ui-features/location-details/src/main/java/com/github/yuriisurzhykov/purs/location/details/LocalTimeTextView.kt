@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import com.github.yuriisurzhykov.purs.domain.model.TimeSlot
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -15,7 +16,8 @@ import java.util.Locale
 fun LocalTimeTextView(
     time: TimeSlot,
     modifier: Modifier = Modifier,
-    style: TextStyle = MaterialTheme.typography.bodyLarge
+    style: TextStyle = MaterialTheme.typography.bodyLarge,
+    textAlign: TextAlign? = null
 ) {
     Text(
         text = stringResource(id = R.string.format_patter_time).format(
@@ -23,7 +25,8 @@ fun LocalTimeTextView(
             time.endTime.toFormattedString()
         ),
         modifier = modifier,
-        style = style
+        style = style,
+        textAlign = textAlign
     )
 }
 
