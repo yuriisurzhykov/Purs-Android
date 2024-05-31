@@ -54,9 +54,9 @@ jobs:
       - name: Get APK file path
         id: apk-path
         run: |
-          # Find the AAB file, accounting for potential variations in the filename.
+          # Find the APK file, accounting for potential variations in the filename.
           apk_file=$(find . -name '*.apk' -type f -path "*build/outputs/apk/release/*" | head -1) 
-          echo "apk_file=${aab_file}" >> $GITHUB_OUTPUT
+          echo "apk_file=${apk_file}" >> $GITHUB_OUTPUT
 
       - name: Upload AAB file to Artifacts
         uses: actions/upload-artifact@v3
