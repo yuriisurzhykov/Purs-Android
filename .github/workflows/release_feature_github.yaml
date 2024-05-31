@@ -51,22 +51,78 @@ jobs:
           aab_file=$(find . -name '*.aab' -type f -path "*build/outputs/bundle/release/*" | head -1) 
           echo "aab_file=${aab_file}" >> $GITHUB_OUTPUT
 
+      - name: Get APK file path
+        id: apk-path
+        run: |
+          # Find the AAB file, accounting for potential variations in the filename.
+          apk_file=$(find . -name '*.apk' -type f -path "*build/outputs/apk/release/*" | head -1) 
+          echo "apk_file=${aab_file}" >> $GITHUB_OUTPUT
+
       - name: Upload AAB file to Artifacts
         uses: actions/upload-artifact@v3
         with:
           path: ${{ steps.aab-path.outputs.aab_file }}
 
-      - name: Generate Universal APK file
-        uses: snnaplab/universal-apk-generate-action@v1
-        id: apk-generate
-        with:
-          aab-path: ${{ steps.aab-path.outputs.path }}
-          keystore-base64: ${{ secrets.KEYSTORE_FILE }}
-          keystore-password: ${{ secrets.KEYSTORE_PASSWORD }}
-          key-alias: ${{ secrets.KEY_ALIAS }}
-          key-password: ${{ secrets.KEY_PASSWORD }}
-
       - name: Upload APK file to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          path: ${{ steps.apk-generate.outputs.apk-path }}
+          path: ${{ steps.apk-path.outputs.apk_file }}
+
+      - name: Build Changelog
+        uses: ardalanamini/auto-changelog@v4
+        id: changelog
+        with:
+          github-token: ${{ github.token }}
+          commit-types: |
+            feat: New Features
+            fix: Bug Fixes
+            build: Build System & Dependencies
+            perf: Performance Improvements
+            docs: Documentation
+            test: Tests
+            refactor: Refactors
+            chore: Chores
+            ci: CI
+            style: Code Style
+            revert: Reverts
+          default-commit-type: Other Changes
+          release-name: v1.0.0
+          release-name-prefix: ""
+          mention-authors: true
+          mention-new-contributors: true
+          include-compare-link: true
+          include-pr-links: true
+          include-commit-links: true
+          semver: true
+          use-github-autolink: true
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload APK
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.apk-path.outputs.apk_file }}
+          asset_name: app-release-signed-${{ github.ref }}.apk
+          asset_content_type: application/zip
+
+      - name: Upload AAB
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.aab-path.outputs.aab_file }}
+          asset_name: app-release-signed-${{ github.ref }}.aab
+          asset_content_type: application/zip
