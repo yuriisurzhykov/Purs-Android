@@ -1,19 +1,15 @@
 name: Release Build
 
 on:
-  push:
-    branches: [ "main" ]
-    tags: [ "v*" ]
-
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  release_build:
+  build:
+    name: Build
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Android project
+        uses: actions/checkout@v3
       - name: Set up JDK 19
         uses: actions/setup-java@v3
         with:
@@ -21,54 +17,32 @@ jobs:
           distribution: 'corretto'
           cache: gradle
 
-      - name: Cache Gradle and wrapper
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-      #1
-      - name: Decode Keystore
-        env:
-          ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
-          SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
+      - name: Build with Gradle
+        run: ./gradlew assembleRelease bundleRelease
 
-        run: |
-          echo $ENCODED_STRING > keystore-b64.txt
-          base64 -d keystore-b64.txt > $SIGNING_KEY_STORE_PATH
+      - name: Get AAB file path
+        id: aab-path
+        run: echo "path=$(find . -regex '^.*/build/outputs/bundle/.*\.aab$' -type f | head -1)" >> $GITHUB_OUTPUT
 
-      #2
-      - name: Build Release apk
-        env:
-          SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-        run: ./gradlew assembleRelease
-
-      - name: Build Release bundle
-        env:
-          SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-        run: ./gradlew bundleRelease
-      #3
-      - name: Upload Release Build to Artifacts
+      - name: Upload AAB file to Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: release-artifacts
-          paths: |
-            app/build/outputs/apk/release/
-            app/build/outputs/bundle/release/
-      #4
-      - name: Create Github Release
-        uses: softprops/action-gh-release@v1
+          path: ${{ steps.aab-path.outputs.path }}
+
+      - name: Generate Universal APK file
+        uses: snnaplab/universal-apk-generate-action@v1
+        id: apk-generate
         with:
-          generate_release_notes: true
-          prerelease: true
-          files: |
-            app/build/outputs/apk/release/app-release.apk
-            app/build/outputs/bundle/release/app-release.aab
+          aab-path: ${{ steps.aab-path.outputs.path }}
+          keystore-base64: ${{ secrets.KEYSTORE_FILE }}
+          keystore-password: ${{ secrets.KEYSTORE_PASSWORD }}
+          key-alias: ${{ secrets.KEY_ALIAS }}
+          key-password: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload APK file to Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: ${{ steps.apk-generate.outputs.apk-path }}
