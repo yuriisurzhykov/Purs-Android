@@ -70,37 +70,51 @@ interface BuildCurrentLocationStatusUseCase {
                 if (timeSlot.endTime < timeSlot.startTime) {
                     timeSlot.startTime.isBefore(currentTime)
                 } else {
-                    timeSlot.endTime.isAfter(currentTime) && timeSlot.startTime.isBefore(currentTime)
+                    (timeSlot.startTime == LocalTime.MIDNIGHT && timeSlot.endTime == LocalTime.MIDNIGHT) ||
+                            (timeSlot.startTime.isBefore(currentTime) && timeSlot.endTime.isAfter(currentTime))
                 }
             }
             return if (currentOpenSchedule != null) {
-                val timeDifference =
-                    if (currentOpenSchedule.endTime < currentOpenSchedule.startTime) {
-                        currentTime.until(LocalTime.MAX, ChronoUnit.MINUTES) +
-                                LocalTime.MIDNIGHT.until(currentOpenSchedule.endTime, ChronoUnit.MINUTES)
-                    } else {
-                        currentTime.until(currentOpenSchedule.endTime, ChronoUnit.MINUTES)
-                    }
-                // If the location closes within 24 hours, return the location status
-                // that it closing soon. Otherwise, return the location status that it opens
-                return if (timeDifference <= 60) {
-                    if (nextWorkingDay == null) {
-                        return LocationStatus.Closing(currentOpenSchedule.endTime)
-                    }
-
-                    val nextOpenTime = nextWorkingDay.second.startTime
-                    val reopenTimeDifference = currentTime.until(nextOpenTime, ChronoUnit.HOURS)
-                    if (reopenTimeDifference > 24) {
-                        LocationStatus.ClosingSoonLongReopen(
-                            currentOpenSchedule.endTime,
-                            nextWorkingDay.first,
-                            nextOpenTime
-                        )
-                    } else {
-                        LocationStatus.ClosingSoon(currentOpenSchedule.endTime, nextOpenTime)
-                    }
-                } else {
+                // If the current schedule is open 24h for today, return the location status that
+                // it open
+                if (currentOpenSchedule.startTime == LocalTime.MIDNIGHT &&
+                    currentOpenSchedule.endTime == LocalTime.MIDNIGHT) {
                     LocationStatus.Open(currentOpenSchedule.endTime)
+                } else {
+                    // Calculate time difference between current time and the end time of the location
+                    val timeDifference =
+                        if (currentOpenSchedule.endTime < currentOpenSchedule.startTime) {
+                            currentTime.until(LocalTime.MAX, ChronoUnit.MINUTES) +
+                                    LocalTime.MIDNIGHT.until(
+                                        currentOpenSchedule.endTime,
+                                        ChronoUnit.MINUTES
+                                    )
+                        } else {
+                            currentTime.until(currentOpenSchedule.endTime, ChronoUnit.MINUTES)
+                        }
+                    // If the location closes within 24 hours, return the location status
+                    // that it closing soon. Otherwise, return the location status that it opens
+                    return if (timeDifference <= 60) {
+                        if (nextWorkingDay == null) {
+                            return LocationStatus.Closing(currentOpenSchedule.endTime)
+                        }
+
+                        // Calculate time difference between current time and the start time of the
+                        // next schedule and returns location status based on it
+                        val nextOpenTime = nextWorkingDay.second.startTime
+                        val reopenTimeDifference = currentTime.until(nextOpenTime, ChronoUnit.HOURS)
+                        if (reopenTimeDifference > 24) {
+                            LocationStatus.ClosingSoonLongReopen(
+                                currentOpenSchedule.endTime,
+                                nextWorkingDay.first,
+                                nextOpenTime
+                            )
+                        } else {
+                            LocationStatus.ClosingSoon(currentOpenSchedule.endTime, nextOpenTime)
+                        }
+                    } else {
+                        LocationStatus.Open(currentOpenSchedule.endTime)
+                    }
                 }
             } else null
         }

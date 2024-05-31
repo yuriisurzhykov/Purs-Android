@@ -34,13 +34,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -53,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.github.yuriisurzhykov.purs.domain.model.Location
@@ -76,18 +77,35 @@ internal fun LocationDetails(
     viewModel: LocationDetailsViewModel,
     modifier: Modifier = Modifier
 ) {
-    val state = viewModel.detailsResponse.collectAsState().value
-    BackgroundImage(modifier = modifier.fillMaxSize())
+    val state: State by viewModel.detailsResponse.collectAsStateWithLifecycle(lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current)
+    var blurContent by remember { mutableStateOf(false) }
+    BackgroundImage(blurContent = blurContent, modifier = Modifier.fillMaxSize())
     if (state != State.None) {
-        Content(state = state, modifier = modifier.fillMaxSize())
+        Content(state = state, modifier = modifier.fillMaxSize()) { expanded ->
+            blurContent = expanded
+        }
     }
 }
 
 @Composable
-internal fun Content(state: State, modifier: Modifier = Modifier) {
+fun BackgroundImage(blurContent: Boolean, modifier: Modifier = Modifier) {
+    AsyncImage(
+        model = R.drawable.screen_background,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = if (blurContent) modifier.blur(radiusX = 15.dp, radiusY = 15.dp) else modifier
+    )
+}
+
+@Composable
+internal fun Content(
+    state: State,
+    modifier: Modifier = Modifier,
+    onExpand: (Boolean) -> Unit = {}
+) {
     Column(modifier = modifier) {
         if (state is State.Success && state.location != null) {
-            LocationDetailsMain(state.location)
+            LocationDetailsMain(state.location, onExpand = onExpand)
         }
         if (state is State.Loading) {
             CircularProgressIndicator(
@@ -96,12 +114,12 @@ internal fun Content(state: State, modifier: Modifier = Modifier) {
                     .padding(DefaultPadding)
             )
             if (state.location != null) {
-                LocationDetailsMain(location = state.location)
+                LocationDetailsMain(location = state.location, onExpand = onExpand)
             }
         }
         if (state is State.Error) {
             if (state.location != null) {
-                LocationDetailsMain(location = state.location)
+                LocationDetailsMain(location = state.location, onExpand = onExpand)
             }
             state.error?.let {
                 Toast.makeText(LocalContext.current, it.message.orEmpty(), Toast.LENGTH_SHORT)
@@ -112,7 +130,7 @@ internal fun Content(state: State, modifier: Modifier = Modifier) {
 }
 
 @Composable
-internal fun LocationDetailsMain(location: Location) {
+internal fun LocationDetailsMain(location: Location, onExpand: (Boolean) -> Unit = {}) {
     Text(
         text = location.locationName,
         style = TextStyle(
@@ -126,7 +144,7 @@ internal fun LocationDetailsMain(location: Location) {
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
-        OperatingHoursBox(location = location)
+        OperatingHoursBox(location = location, onExpand = onExpand)
         Box(
             modifier = Modifier
                 .padding(bottom = 16.dp)
@@ -138,7 +156,11 @@ internal fun LocationDetailsMain(location: Location) {
 }
 
 @Composable
-internal fun OperatingHoursBox(location: Location, modifier: Modifier = Modifier) {
+internal fun OperatingHoursBox(
+    location: Location,
+    modifier: Modifier = Modifier,
+    onExpand: (Boolean) -> Unit = {}
+) {
     var expanded by remember { mutableStateOf(false) }
     val expandIconAngle = remember { Animatable(0f) }
 
@@ -179,6 +201,7 @@ internal fun OperatingHoursBox(location: Location, modifier: Modifier = Modifier
                     ),
                     onClick = {
                         expanded = !expanded
+                        onExpand.invoke(expanded)
                     })
                 .padding(DefaultPadding),
             contentAlignment = Alignment.CenterStart
@@ -342,16 +365,6 @@ fun LocationStatusTextView(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun BackgroundImage(modifier: Modifier = Modifier) {
-    AsyncImage(
-        model = R.drawable.screen_background,
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-        modifier = modifier
-    )
-}
-
-@Composable
 fun WorkingHourView(workingDay: WorkingDay) {
     val textWeight = if (workingDay.weekDay == LocalDate.now().dayOfWeek) {
         FontWeight.Bold
@@ -385,7 +398,9 @@ fun WorkingHourView(workingDay: WorkingDay) {
                 workingDay.scheduleList.forEach { timeSlot ->
                     LocalTimeTextView(
                         timeSlot,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = textWeight)
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = textWeight),
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End
                     )
                 }
             }

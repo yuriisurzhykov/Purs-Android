@@ -1,5 +1,5 @@
-![Super linter](https://github.com/yuriisurzhykov/Purs-Android/actions/workflows/android_lint_checker.yaml/badge.svg)
-![Unit tests](https://github.com/yuriisurzhykov/Purs-Android/actions/workflows/android_tests_run.yaml/badge.svg)
+[![Android Lint Checker](https://github.com/yuriisurzhykov/Purs-Android/actions/workflows/android_lint_checker.yaml/badge.svg)](https://github.com/yuriisurzhykov/Purs-Android/actions/workflows/android_lint_checker.yaml)
+[![Tests check](https://github.com/yuriisurzhykov/Purs-Android/actions/workflows/android_tests_run.yaml/badge.svg)](https://github.com/yuriisurzhykov/Purs-Android/actions/workflows/android_tests_run.yaml)
 
 # About
 
@@ -188,6 +188,7 @@ the `end_local_date` is 24:00. The "Open 24 hours" has to be displayed.
   "end_local_time": "00:00:00"
 }
 ```
+Or no schema for the day, so that list of time slots is empty.
 
 </details>
 
@@ -212,14 +213,7 @@ better to use an image as an asset croped for different screen sizes.
 
 ### Location selection
 
-In the example JSON structure the only one location is available, but to make things more flexible
-and scalable it would be better if we would open selection screen in case of multiple location
-available. So the logic should be the following:
-
-- If there is only one location in the structure, then a screen with details by working hours
-  immediately opens.
-- If there is multiple locations the selection screen should be displayed.
-- If no location received the dialog should appear to notify user about the failure
+In the example JSON structure the only one location is available and the structure of JSON at the moment does not imply that more than one location will be sent, which means at the moment, we can limit ourselve to only one location at a time. In the future if need more than one location be available for user, the location details screen remains unchanged with only few changes: the use case to fetch location details needs to be modified and the location ID has to be passed to the use case.
 
 ### Location screen
 
@@ -244,39 +238,6 @@ Components:
       right under the first time occurence.
 - It's better to animate dropdown effect to make the UI smooth
 
-## User flow
-
-1. App Launch:
-   The app starts, and the user sees a loading screen or the main screen.
-2. Location Selection Screen:
-   After loading, the user is presented with a screen to select a location from a list of available
-   locations.
-3. Location Selection:
-   The user selects a location from the list.
-   Upon selection, the app navigates to the detailed working hours screen for the chosen location.
-4. Working Hours Screen:
-   On this screen, the user sees the location name and its working hours.
-   The user can navigate back to the location selection screen to choose another location.
-
-### Visualization of User Flow
-
-<img src="https://github.com/yuriisurzhykov/Purs-Android/assets/44873047/0359dacb-0c88-4239-b2d3-f2b75f3355ed" alt="drawing" width="350"/>
-
-### Location selection screen
-
-#### UI Elements
-
-- Navigation Bar/App Bar with the title "Select Location".
-- List of locations (List in SwiftUI, LazyColumn in Jetpack Compose).
-- Loading indicator (ProgressView in SwiftUI, CircularProgressIndicator in Jetpack Compose) while
-  data is being loaded.
-- Each list item should be styled as a card (CardView) with the location name and an arrow
-  indicating navigation to the detail screen.
-
-#### Actions
-
-When a list item is tapped, the app navigates to the detailed working hours screen for the selected
-location.
 </details>
 
 <details>
@@ -405,6 +366,18 @@ keyAlias=purs
 keyPassword=Purs2024
 ```
 **NOTE:** You can leave all variables empty if you just want to make a debug build
+</details>
+
+<details>
+  <summary>TODO Next</summary>
+
+## What TO DO next
+Several enhancements are needed to finish the task:
+- [ ] Update the current location status periodically to keep information up to date for the user [#44](https://github.com/yuriisurzhykov/Purs-Android/issues/44)
+- [ ] Fix expand arrow animation which turns wrong angle if user clicks too fast [#45](https://github.com/yuriisurzhykov/Purs-Android/issues/45)
+- [ ] Blur the background when user expand the location hours section [#46](https://github.com/yuriisurzhykov/Purs-Android/issues/46)
+- [ ] Edge-to-edge stoped working properly, need to fix it [#47](https://github.com/yuriisurzhykov/Purs-Android/issues/47)
+- [ ] Fix working hours alignment on expandable section [#48](https://github.com/yuriisurzhykov/Purs-Android/issues/48)
 </details>
 
 # Contacts
