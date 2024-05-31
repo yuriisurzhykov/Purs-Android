@@ -32,6 +32,11 @@ jobs:
           echo "keystorePassword=$KEYSTORE_STORE_PASSWORD" >> signing.properties
           echo "::debug::storePassword=$KEYSTORE_STORE_PASSWORD"
           echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> signing.properties
+        env:
+          ANDROID_KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+          KEYSTORE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
