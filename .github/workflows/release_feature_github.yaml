@@ -72,7 +72,7 @@ jobs:
         uses: ardalanamini/auto-changelog@v4
         id: changelog
         with:
-          github-token: ${{ github.token }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           commit-types: |
             feat: New Features
             fix: Bug Fixes
@@ -110,7 +110,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.apk-path.outputs.apk_file }}
@@ -120,7 +120,7 @@ jobs:
       - name: Upload AAB
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.aab-path.outputs.aab_file }}
