@@ -133,12 +133,11 @@ interface BuildCurrentLocationStatusUseCase {
                 if (currentIndex == currentDate.dayOfWeek.value - 1) {
                     val containsSchedule =
                         schedule[currentIndex].scheduleList.find { it.startTime.isAfter(currentTime) }
-                    return if (containsSchedule != null) {
-                        Pair(schedule[currentIndex].dayName, containsSchedule)
+                    if (containsSchedule != null) {
+                        return Pair(schedule[currentIndex].dayName, containsSchedule)
                     } else {
                         if (firstLoopRun) {
                             firstLoopRun = false
-                            continue
                         } else {
                             return null
                         }
